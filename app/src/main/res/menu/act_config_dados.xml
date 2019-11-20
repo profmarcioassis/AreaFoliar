@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_ok"
+        android:orderInCategory="1"
+        android:title="Ok"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_excluir"
+        android:orderInCategory="2"
+        android:title="Excluir"
+        app:showAsAction="ifRoom" />
+</menu>
