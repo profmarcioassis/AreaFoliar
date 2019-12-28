@@ -204,10 +204,10 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
                 }
             } else if (area > areaLimitante && area < areaMaxima && rotatedRect[i].boundingRect().height * alturaQuadrado / altQuad > 1) {
                 Scalar color = new Scalar(255, 0, 0);
-                Imgproc.drawContours(ImageMat, contours, i, color, 3);
-                Imgproc.putText (ImageMat,cont + "",new Point(rotatedRect[i].boundingRect().br().x, rotatedRect[i].boundingRect().br().y),Core.FONT_HERSHEY_SIMPLEX ,5,new Scalar(255, 0, 0),
-                        10
-                );
+                Imgproc.drawContours(ImageMat, contours, i ,color, 3);
+                double x = rotatedRect[i].boundingRect().x +  0.5 * rotatedRect[i].boundingRect().width;
+                double y = rotatedRect[i].boundingRect().y +  0.5 * rotatedRect[i].boundingRect().height;
+                Imgproc.putText (ImageMat,cont + "",new Point(x,y),Core.FONT_HERSHEY_SIMPLEX ,5,new Scalar(255, 0, 0), 10);
                 //Imgproc.rectangle(ImageMat, rotatedRect[i].tl(), rotatedRect[i].br(), color, 3);
                 //Imgproc.circle(drawing, centers[i], (int) radius[i][0], color, 3);
                 //result = src.submat(rotatedRect[i]);
@@ -235,6 +235,30 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
             }
         }
         return ImageMat;
+    }
+
+    static double CentroX ( Point[] knots ) {
+        Point center = new Point();
+
+        double sumofx = 0;
+
+        for ( int i = 0; i < knots.length; i++ ) {
+            sumofx = sumofx + knots[ i ].x;
+        }
+
+        return sumofx / knots.length;
+    }
+
+    static double CentroY ( Point[] knots ) {
+        Point center = new Point();
+
+        double sumofy = 0;
+
+        for ( int i = 0; i < knots.length; i++ ) {
+            sumofy = sumofy + knots[ i ].y;
+        }
+
+        return sumofy / knots.length;
     }
 
 
@@ -318,7 +342,7 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        //Converte a imagem fornecida pela camêra em tons de cinza
+        //Converte a imagem fornecida pela camera em tons de cinza
         ImageMat = inputFrame.gray();
         //Cria um matriz
         result = new Mat();

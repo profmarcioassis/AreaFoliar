@@ -23,7 +23,7 @@ import java.io.OutputStream;
 public class ActCamera extends AppCompatActivity implements View.OnClickListener{
 
     ImageView imageViewFoto;
-    private FloatingActionButton galeria;
+    private Bitmap foto;
 
 
     @Override
@@ -33,14 +33,19 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         imageViewFoto = (ImageView)findViewById(R.id.imageViewFoto);
-        galeria = (FloatingActionButton)findViewById(R.id.galeria);
         //Bundle extras = this.getIntent().getExtras();
 
         //byte[] byteArray = extras.getByteArray("foto");
         //Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        Bitmap rotated = Bitmap.createBitmap(ActCameraCv.bitmap, 0, 0, ActCameraCv.bitmap.getWidth(),ActCameraCv.bitmap.getHeight(), matrix, true);
+        if(ActCameraCv.bitmap == null){
+            foto = ActMain.bitmap;
+        }else{
+            foto = ActCameraCv.bitmap;
+        }
+
+        Bitmap rotated = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(),foto.getHeight(), matrix, true);
         imageViewFoto.setImageBitmap(rotated);
 
     }
@@ -54,24 +59,34 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.download:
+                ContentValues contentValues = new ContentValues();
+                Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                OutputStream outputStream;
 
-        ContentValues contentValues = new ContentValues();
-        Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-        OutputStream outputStream;
+                try {
+                    //Salva a imagem
+                    outputStream = getContentResolver().openOutputStream(uri);
+                    boolean compressed = ActCameraCv.bitmap.compress(Bitmap.CompressFormat.PNG, 0,
+                            outputStream);
 
-        try {
-            //Salva a imagem
-            outputStream = getContentResolver().openOutputStream(uri);
-            boolean compressed = ActCameraCv.bitmap.compress(Bitmap.CompressFormat.PNG, 0,
-                    outputStream);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    ActCameraCv.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            ActCameraCv.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                } catch (FileNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                break;
 
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            case R.id.dados_camera:
+                Intent it1 = new Intent(this, ActDados.class);
+                startActivity(it1);
+                break;
+
         }
+
     }
 
     @Override

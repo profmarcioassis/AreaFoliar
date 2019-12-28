@@ -10,28 +10,26 @@
         android:id="@+id/nome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="28dp"
         android:text="Nome:"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.035"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/lblNome"
-        android:layout_width="0dp"
+        android:layout_width="304dp"
         android:layout_height="19dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginLeft="3dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:textColor="@android:color/background_dark"
         android:textSize="14sp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/lblArea"
-        app:layout_constraintEnd_toStartOf="@+id/altura"
-        app:layout_constraintStart_toEndOf="@+id/nome"
-        app:layout_constraintTop_toTopOf="@+id/nome"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/area"
@@ -40,8 +38,6 @@
         android:layout_marginTop="56dp"
         android:text="Área:"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintEnd_toEndOf="@+id/nome"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/nome"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,39 +45,33 @@
         android:id="@+id/lblArea"
         android:layout_width="0dp"
         android:layout_height="19dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginLeft="3dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:textColor="@android:color/background_dark"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/lblNome"
-        app:layout_constraintStart_toEndOf="@+id/area"
+        app:layout_constraintStart_toStartOf="@+id/lblNome"
         app:layout_constraintTop_toTopOf="@+id/area" />
 
     <TextView
         android:id="@+id/altura"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="84dp"
         android:text="Altura:"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.685"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/area"
+        app:layout_constraintStart_toStartOf="@+id/area"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/lblAltura"
         android:layout_width="0dp"
         android:layout_height="19dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginLeft="3dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:textColor="@android:color/background_dark"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/lblLargura"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/altura"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/lblArea"
         app:layout_constraintTop_toTopOf="@+id/altura" />
 
     <TextView
@@ -90,11 +80,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="112dp"
         android:text="Largura:"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.698"
+        app:layout_constraintEnd_toEndOf="@+id/altura"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -102,13 +91,12 @@
         android:id="@+id/lblLargura"
         android:layout_width="80dp"
         android:layout_height="19dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginLeft="3dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:textColor="@android:color/background_dark"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/largura"
+        app:layout_constraintStart_toStartOf="@+id/lblAltura"
         app:layout_constraintTop_toTopOf="@+id/largura" />
 
 </android.support.constraint.ConstraintLayout>

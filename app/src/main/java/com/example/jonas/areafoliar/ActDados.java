@@ -1,15 +1,21 @@
 package com.example.jonas.areafoliar;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.jonas.areafoliar.database.DadosOpenHelper;
@@ -39,6 +45,7 @@ public class ActDados extends AppCompatActivity{
     private ArrayList<Folha> mesPassado = new ArrayList<>();
     private ArrayList<Folha> mesPresente = new ArrayList<>();
     private ArrayList<Folha> maisRecentes = new ArrayList<>();
+    private SwipeController swipeController = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +123,7 @@ public class ActDados extends AppCompatActivity{
         //listDados.setAdapter(folhasAdapter);
         listDados.setAdapter(folhas2Adapter);
 
+        setupRecyclerView();
     }
 
     protected ArrayList<Folha> calculaMedia(ArrayList<Folha> folhasCarregadas){
@@ -125,6 +133,7 @@ public class ActDados extends AppCompatActivity{
         String nomeData, nomeTemp = " ",vetorData[],vetorTemp[];
 
         for(int i = 0; i < folhasCarregadas.size(); i ++){
+            Folha folha = null;
             vetorData = folhasCarregadas.get(i).getData().split(" ");
             nomeData = vetorData[0];
             if(i == folhasCarregadas.size() - 1){
@@ -137,7 +146,7 @@ public class ActDados extends AppCompatActivity{
                 BigDecimal bdArea = new BigDecimal((mediaArea / temp.size())).setScale(4, RoundingMode.HALF_EVEN);
                 BigDecimal bdAltura = new BigDecimal((mediaAltura / temp.size())).setScale(4, RoundingMode.HALF_EVEN);
                 BigDecimal bdLargura = new BigDecimal((mediaLargura / temp.size())).setScale(4, RoundingMode.HALF_EVEN);
-                Folha folha = new Folha(nomeData, bdArea + "", bdAltura + "", bdLargura + "",nomeData);
+                folha = new Folha(nomeData + " - Nome do teste", bdArea + "", bdAltura + "", bdLargura + "",nomeData);
                 medias.add(folha);
                 mediaAltura = 0;mediaLargura = 0;mediaArea = 0;
                 temp.clear();
@@ -151,7 +160,7 @@ public class ActDados extends AppCompatActivity{
                         BigDecimal bdArea = new BigDecimal(folhasCarregadas.get(i).getArea()).setScale(4, RoundingMode.HALF_EVEN);
                         BigDecimal bdAltura = new BigDecimal(folhasCarregadas.get(i).getAltura()).setScale(4, RoundingMode.HALF_EVEN);
                         BigDecimal bdLargura = new BigDecimal(folhasCarregadas.get(i).getLargura()).setScale(4, RoundingMode.HALF_EVEN);
-                        Folha folha = new Folha(nomeData,bdArea + "",bdAltura + "",bdLargura + "",nomeData);
+                        folha = new Folha(nomeData + " - Nome do teste",bdArea + "",bdAltura + "",bdLargura + "",nomeData);
                         medias.add(folha);
                         mediaAltura = 0;mediaLargura = 0;mediaArea = 0;
                     }else{
@@ -163,11 +172,16 @@ public class ActDados extends AppCompatActivity{
                         BigDecimal bdArea = new BigDecimal((mediaArea / temp.size())).setScale(4, RoundingMode.HALF_EVEN);
                         BigDecimal bdAltura = new BigDecimal((mediaAltura / temp.size())).setScale(4, RoundingMode.HALF_EVEN);
                         BigDecimal bdLargura = new BigDecimal((mediaLargura / temp.size())).setScale(4, RoundingMode.HALF_EVEN);
-                        Folha folha = new Folha(nomeData, bdArea + "", bdAltura + "", bdLargura + "",nomeData);
+                        folha = new Folha(nomeData + " - Nome do teste", bdArea + "", bdAltura + "", bdLargura + "",nomeData);
                         medias.add(folha);
                         mediaAltura = 0;mediaLargura = 0;mediaArea = 0;
                         temp.clear();
                     }
+                }
+            }
+            for(int j = 0; j < dados.size(); j ++){
+                if(!dados.get(i).getNome().equals(nomeData)){
+                    folhasRepositorio.inserir(folha);
                 }
             }
         }
@@ -220,5 +234,59 @@ public class ActDados extends AppCompatActivity{
         }catch (SQLException ex){
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.act_dados, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_dados) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Nesta tela você pode visualizar as análises que ja foram realizadas. Para " +
+                    "uma melhor identificação, os dados foram separados de acordo com a data em que foram gerados.");
+            builder.setPositiveButton("Fechar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupRecyclerView() {
+
+        swipeController = new SwipeController(new SwipeControllerActions() {
+            @Override
+            public void onRightClicked(int position) {
+
+            }
+            public void onLeftClicked(int position) {
+
+            }
+        });
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
+        itemTouchhelper.attachToRecyclerView(listDados);
+
+        listDados.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
     }
 }
