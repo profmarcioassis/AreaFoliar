@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ActCameraCv extends AppCompatActivity implements CvCameraViewListener2, View.OnClickListener {
+    private static final String TAG = "MYAPP::OPENCV";
     private CameraBridgeViewBase mOpenCvCameraView;
     private FloatingActionButton camera, gallery;
     private Mat result;
@@ -61,7 +62,7 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
     private Folha folha;
     private int cont = 1;
 
-    /*BaseLoaderCallback mCallBack = new BaseLoaderCallback(this) {
+    BaseLoaderCallback mCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
@@ -76,7 +77,7 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
                 }
             }
         }
-    };*/
+    };
 
    static {
        if(!OpenCVLoader.initDebug()){
@@ -317,12 +318,7 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
     @Override
     public void onResume() {
         super.onResume();
-        if (!OpenCVLoader.initDebug()) {
-            //OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mCallBack);
-        } else {
-            //System.loadLibrary("jniLibs");
-            //mCallBack.onManagerConnected(BaseLoaderCallback.SUCCESS);
-        }
+        mCallBack.onManagerConnected(BaseLoaderCallback.SUCCESS);
     }
     /*protected void onResume() {
         super.onResume();

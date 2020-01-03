@@ -133,7 +133,8 @@ public class ActDados extends AppCompatActivity{
         String nomeData, nomeTemp = " ",vetorData[],vetorTemp[];
 
         for(int i = 0; i < folhasCarregadas.size(); i ++){
-            Folha folha = null;
+            Folha folha = new Folha();
+            boolean existe = false;
             vetorData = folhasCarregadas.get(i).getData().split(" ");
             nomeData = vetorData[0];
             if(i == folhasCarregadas.size() - 1){
@@ -150,6 +151,15 @@ public class ActDados extends AppCompatActivity{
                 medias.add(folha);
                 mediaAltura = 0;mediaLargura = 0;mediaArea = 0;
                 temp.clear();
+                for(int j = 0; j < dados.size(); j ++){
+                    if(dados.get(j).getData().equals(nomeData)){
+                        existe = true;
+                    }
+                }
+                if(existe == false){
+                    folhasRepositorio.inserir(folha);
+                }
+                existe = false;
             }else{
                 vetorTemp = folhasCarregadas.get(i + 1).getNome().split(" ");
                 nomeTemp = vetorTemp[0];
@@ -162,6 +172,15 @@ public class ActDados extends AppCompatActivity{
                         BigDecimal bdLargura = new BigDecimal(folhasCarregadas.get(i).getLargura()).setScale(4, RoundingMode.HALF_EVEN);
                         folha = new Folha(nomeData + " - Nome do teste",bdArea + "",bdAltura + "",bdLargura + "",nomeData);
                         medias.add(folha);
+                        for(int j = 0; j < dados.size(); j ++){
+                            if(dados.get(j).getData().equals(nomeData)){
+                                existe = true;
+                            }
+                        }
+                        if(existe == false){
+                            folhasRepositorio.inserir(folha);
+                        }
+                        existe = false;
                         mediaAltura = 0;mediaLargura = 0;mediaArea = 0;
                     }else{
                         for(int j = 0; j < temp.size(); j ++){
@@ -175,13 +194,17 @@ public class ActDados extends AppCompatActivity{
                         folha = new Folha(nomeData + " - Nome do teste", bdArea + "", bdAltura + "", bdLargura + "",nomeData);
                         medias.add(folha);
                         mediaAltura = 0;mediaLargura = 0;mediaArea = 0;
+                        for(int j = 0; j < dados.size(); j ++){
+                            if(dados.get(j).getData().equals(nomeData)){
+                                existe = true;
+                            }
+                        }
+                        if(existe == false){
+                            folhasRepositorio.inserir(folha);
+                        }
+                        existe = false;
                         temp.clear();
                     }
-                }
-            }
-            for(int j = 0; j < dados.size(); j ++){
-                if(!dados.get(i).getNome().equals(nomeData)){
-                    folhasRepositorio.inserir(folha);
                 }
             }
         }
