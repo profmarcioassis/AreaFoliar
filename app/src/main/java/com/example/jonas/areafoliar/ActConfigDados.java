@@ -4,8 +4,7 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,13 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ActConfigDados extends AppCompatActivity {
-    private EditText edtNome, edtArea, edtAltura, edtLargura;
-    public static RecyclerView listDados;
-    private ConstraintLayout layoutContentMain;
-    private CoordinatorLayout coordinatorLayout;
+    private EditText edtNomeTeste;
+    private RecyclerView listDados;
     private FolhasRepositorio folhasRepositorio;
     private SQLiteDatabase conexao;
-    private DadosOpenHelper dadosOpenHelper;
     private Folha folha;
     public static List<Folha> dados;
 
@@ -37,22 +33,16 @@ public class ActConfigDados extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_config_dados);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = this.findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        listDados = (RecyclerView) findViewById(R.id.listConfigDados);
-        layoutContentMain = (ConstraintLayout)findViewById(R.id.layoutContentConfigDados);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id
-                .coordinatorConfigLayout);
+        listDados = findViewById(R.id.listConfigDados);
         criarConexao();
         listDados.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         listDados.setLayoutManager(linearLayoutManager);
         folhasRepositorio = new FolhasRepositorio(conexao);
         dados = folhasRepositorio.consultar();
-        edtNome = (EditText) findViewById(R.id.edtNome);
-        edtArea = (EditText) findViewById(R.id.edtArea);
-        edtAltura = (EditText) findViewById(R.id.edtAltura);
-        edtLargura = (EditText) findViewById(R.id.edtLargura);
+        edtNomeTeste = findViewById(R.id.edtNomeTeste);
         criarConexao();
         verificaParametro();
     }
@@ -71,74 +61,48 @@ public class ActConfigDados extends AppCompatActivity {
     }
 
     private void confirmar() {
-        //validaCampos();
-        Bundle bundle = getIntent().getExtras();
-        //Toast.makeText(this,"Botão Cancelar Selecionado", Toast.LENGTH_SHORT).show();
-        for(int i = 0; i < dados.size(); i ++){
-            if(dados.get(i).getData().equals(bundle.getString("DATA"))){
-                try {
-                    if (dados.get(i).getCodigo() == 0) {
-                        folhasRepositorio.inserir(dados.get(i));
-                    } else {
-                        folhasRepositorio.alterar(dados.get(i));
-                    }
-                    finish();
-                } catch (SQLException ex) {
-                    Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
+        try{
+            folhasRepositorio.alterar(folha.getCodigo(),edtNomeTeste.getText().toString());
+            finish();
+        }catch (SQLException ex){
+            AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+            dlg.setTitle("Erro");
+            dlg.setMessage(ex.getMessage());
+            dlg.setNeutralButton("Confirmar",null);
+            dlg.show();
         }
-    }
-
-    private boolean validaCampos() {
-        String nome = edtNome.getText().toString();
-        String area = edtArea.getText().toString();
-        String altura = edtAltura.getText().toString();
-        String largura = edtLargura.getText().toString();
-        boolean res = false;
-
-        folha.setNome(nome);
-        folha.setArea(area);
-        folha.setAltura(altura);
-        folha.setLargura(largura);
-
-        if (res) {
-            Toast.makeText(getApplicationContext(), "Erro", Toast.LENGTH_SHORT).show();
-        }
-        return res;
     }
 
     private void verificaParametro() {
         Bundle bundle = getIntent().getExtras();
-        folha = new Folha();
-        ArrayList<Folha> folhasSelecionadas = new ArrayList<>();
-        for(int i = 0; i < dados.size(); i ++){
-            if(dados.get(i).getData().equals(bundle.getString("DATA"))){
-                folhasSelecionadas.add(dados.get(i));
+        assert bundle != null;
+        int cod = bundle.getInt("CODIGO");
+
+        for(int j = 0; j < dados.size(); j ++){
+            if(dados.get(j).getCodigo() == cod){
+                folha = dados.get(j);
             }
         }
+
+        ArrayList<Folha> folhasSelecionadas = new ArrayList<>();
+        for(int i = 0; i < dados.size(); i ++){
+            if(dados.get(i).getTipo() == 0 && dados.get(i).getData().equals(folha.getData())){
+                folhasSelecionadas.add(dados.get(i));
+            }else if(dados.get(i).getTipo() == 1 && dados.get(i).getData().equals(folha.getData())){
+                edtNomeTeste.setText(dados.get(i).getNome());
+                edtNomeTeste.setSelection(edtNomeTeste.getText().length());
+            }
+        }
+
         FolhasAdapter folhasAdapter = new FolhasAdapter(folhasSelecionadas);
         listDados.setAdapter(folhasAdapter);
-        /*if ((bundle != null)) {
-            folha.setNome(bundle.getString("NOME"));
-            folha.setArea(bundle.getString("AREA"));
-            folha.setAltura(bundle.getString("ALTURA"));
-            folha.setLargura(bundle.getString("LARGURA"));
-            folha.setData(bundle.getString("DATA"));
-            folha.setCodigo(bundle.getInt("CODIGO"));
-            edtNome.setText(folha.getNome());
-            edtArea.setText(folha.getArea());
-            edtAltura.setText(folha.getAltura());
-            edtLargura.setText(folha.getLargura());
-        }*/
     }
 
     public void criarConexao() {
         try {
-            dadosOpenHelper = new DadosOpenHelper(this);
+            DadosOpenHelper dadosOpenHelper = new DadosOpenHelper(this);
             conexao = dadosOpenHelper.getWritableDatabase();
             folhasRepositorio = new FolhasRepositorio(conexao);
-            //Toast.makeText(getApplicationContext(), "Conexão criada com sucesso", Toast.LENGTH_SHORT).show();
         } catch (SQLException ex) {
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -149,14 +113,11 @@ public class ActConfigDados extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_ok:
-                //Toast.makeText(this,"Botão OK Selecionado", Toast.LENGTH_SHORT).show();
                 confirmar();
                 break;
             case R.id.action_excluir:
-                Bundle bundle = getIntent().getExtras();
-                //Toast.makeText(this,"Botão Cancelar Selecionado", Toast.LENGTH_SHORT).show();
                 for(int i = 0; i < dados.size(); i ++){
-                    if(dados.get(i).getData().equals(bundle.getString("DATA"))){
+                    if(dados.get(i).getData().equals(folha.getData())){
                         folhasRepositorio.excluir(dados.get(i).getCodigo());
                     }
                 }

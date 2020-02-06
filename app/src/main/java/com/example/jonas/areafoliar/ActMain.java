@@ -2,7 +2,9 @@ package com.example.jonas.areafoliar;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -44,6 +46,8 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -66,6 +70,8 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     private DadosOpenHelper dadosOpenHelper;
     private FolhasRepositorio folhaRepositorio;
     private int cont = 1;
+    private String data_completa;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,14 +156,9 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         } else if (id == R.id.nav_folhas) {
             Intent it = new Intent(this, ActDados.class);
             startActivityForResult(it, 0);
-        } else if (id == R.id.nav_info) {
-
         } else if (id == R.id.nav_config) {
-
-        } else if (id == R.id.nav_compartilhar) {
-
-        } else if (id == R.id.nav_sair) {
-
+            Intent itConfig = new Intent(this,ActConfigGeral.class);
+            startActivityForResult(itConfig, 0);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -250,7 +251,8 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.informacao_act_main:
-
+                Intent itConfig = new Intent(this,ActConfigGeral.class);
+                startActivityForResult(itConfig, 0);
                 break;
         }
     }
@@ -264,6 +266,8 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     }
 
     protected Mat createBoundingBoxes(Mat src) {
+        double mediaAltura = 0,mediaLargura = 0,mediaArea = 0;
+
         Mat cannyOutput = new Mat();
         Imgproc.threshold(src, cannyOutput, 111.56, 255, Imgproc.THRESH_OTSU);
         List<MatOfPoint> contours = new ArrayList<>();
@@ -288,8 +292,13 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         }
         int areaLimitante = 10000;
         int areaMaxima = 8000000;
-        int areaQuadradoCm = 25;
-        int alturaQuadrado = 5;
+        int areaQuadradoCm;
+        int alturaQuadrado;
+
+        sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE);
+        String result = sharedPreferences.getString(getString(R.string.pref_text), "");
+        alturaQuadrado = Integer.parseInt(result);
+        areaQuadradoCm = alturaQuadrado * alturaQuadrado;
 
         for (int i = 0; i < contours.size(); i++) {
             double area = Imgproc.contourArea(contoursPolyList.get(i));
@@ -330,19 +339,34 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(data);
                 Date data_atual = cal.getTime();
-                String data_completa = dateFormat.format(data_atual);
+                data_completa = dateFormat.format(data_atual);
                 folha = new Folha();
                 folha.setNome(data_completa + " " + cont);
                 folha.setArea(areaFolhaCm + "");
                 folha.setAltura(altura + "");
                 folha.setLargura(largura + "");
                 folha.setData(data_completa);
+                folha.setTipo(0);
                 folhaRepositorio.inserir(folha);
                 cont ++;
+                mediaAltura += altura;
+                mediaLargura += largura;
+                mediaArea += areaFolhaCm;
                 //Folha folha = new Folha("Folha " + (folhas.size() + 1), areaFolhaCm + "", altura + "", largura + "");
                 //folhas.add(folha);
             }
         }
+        Folha folhaMedia = new Folha();
+        folhaMedia.setNome(data_completa + " - Nome do teste");
+        BigDecimal bdArea = new BigDecimal((mediaArea/cont)).setScale(4, RoundingMode.HALF_EVEN);
+        folhaMedia.setArea(bdArea + "");
+        BigDecimal bdAltura = new BigDecimal((mediaAltura/cont)).setScale(4, RoundingMode.HALF_EVEN);
+        folhaMedia.setAltura(bdAltura + "");
+        BigDecimal bdLargura = new BigDecimal((mediaLargura/cont)).setScale(4, RoundingMode.HALF_EVEN);
+        folhaMedia.setLargura(bdLargura + "");
+        folhaMedia.setData(data_completa);
+        folhaMedia.setTipo(1);
+        folhaRepositorio.inserir(folhaMedia);
         return ImageMat;
     }
 }

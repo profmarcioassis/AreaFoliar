@@ -10,7 +10,7 @@ import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 import java.util.List;
 
 public class Folhas2Adapter extends ExpandableRecyclerViewAdapter<HistoricoViewHolder, FolhaViewHolder> {
-    public Folhas2Adapter(List<? extends ExpandableGroup> groups) {
+    Folhas2Adapter(List<? extends ExpandableGroup> groups) {
         super(groups);
     }
 

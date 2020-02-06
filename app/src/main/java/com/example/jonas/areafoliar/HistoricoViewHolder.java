@@ -13,13 +13,13 @@ public class HistoricoViewHolder extends GroupViewHolder {
     private TextView mTextView;
     private ImageView arrow;
 
-    public HistoricoViewHolder(View itemView) {
+    HistoricoViewHolder(View itemView) {
         super(itemView);
         mTextView = itemView.findViewById(R.id.textView);
         arrow = itemView.findViewById(R.id.arrow);
     }
 
-    public void bind(Historico historico){
+    void bind(Historico historico){
         mTextView.setText(historico.getTitle());
     }
 

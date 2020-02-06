@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/bgapps"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
@@ -24,7 +25,8 @@
             android:layout_margin="10dp"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:focusable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -35,14 +37,14 @@
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:background="@drawable/background_act_main_color1"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_camera_act_main" />
+                    android:src="@drawable/camera"
+                    android:contentDescription="@string/desc_img_cameraMain" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Câmera"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/cameraMain"
                     android:textStyle="bold" />
 
                 <View
@@ -56,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Tire uma foto para que ela seja analizada "
+                    android:text="@string/desc_cameraMain"
                     android:textColor="@android:color/darker_gray" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -68,7 +70,8 @@
             android:layout_margin="10dp"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:focusable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -79,14 +82,14 @@
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:background="@drawable/background_act_main_color2"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_galeria_act_main" />
+                    android:src="@drawable/foto"
+                    android:contentDescription="@string/desc_img_galeriaMain" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Galeria"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/galeriaMain"
                     android:textStyle="bold" />
 
                 <View
@@ -100,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Selecione fotos tiradas anteriormente"
+                    android:text="@string/desc_galeriaMain"
                     android:textColor="@android:color/darker_gray" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -120,7 +123,8 @@
             android:layout_margin="10dp"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:focusable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -131,14 +135,14 @@
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:background="@drawable/background_act_main_color3"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_dados_salvos_act_main" />
+                    android:src="@drawable/lista"
+                    android:contentDescription="@string/desc_img_dadosMain" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Dados salvos"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/dadosMain"
                     android:textStyle="bold" />
 
                 <View
@@ -152,7 +156,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Visualize dados de análises anteriores"
+                    android:text="@string/desc_dadosMain"
                     android:textColor="@android:color/darker_gray" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -164,7 +168,8 @@
             android:layout_margin="10dp"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:focusable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -175,14 +180,14 @@
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:background="@drawable/background_act_main_color4"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_informacao_act_main" />
+                    android:src="@drawable/config"
+                    android:contentDescription="@string/desc_img_configMain"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Informações"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/configMain"
                     android:textStyle="bold" />
 
                 <View
@@ -196,7 +201,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Clique para esclarecer alguma possível dúvida"
+                    android:text="@string/desc_configMain"
                     android:textColor="@android:color/darker_gray" />
             </LinearLayout>
         </android.support.v7.widget.CardView>

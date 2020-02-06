@@ -1,119 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackground"
-    android:padding="1dp">
+    android:layout_margin="8dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
-    <TextView
-        android:id="@+id/nome"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="28dp"
-        android:text="Nome:"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/lblNome"
-        android:layout_width="0dp"
-        android:layout_height="19dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:textColor="@android:color/background_dark"
-        android:textSize="14sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/lblArea"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/nome"
-        app:layout_constraintTop_toTopOf="@+id/nome"
-        app:layout_constraintVertical_bias="0.0" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/area"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Área média:"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/nome"
-        app:layout_constraintTop_toBottomOf="@+id/nome" />
+            <TextView
+                android:id="@+id/nome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/txtNomeDados"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/lblArea"
-        android:layout_width="0dp"
-        android:layout_height="19dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:textColor="@android:color/background_dark"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/area"
-        app:layout_constraintTop_toTopOf="@+id/area" />
+            <TextView
+                android:id="@+id/lblNome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:textColor="@android:color/background_dark"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp" />
 
-    <TextView
-        android:id="@+id/altura"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Comprimento médio:"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/area"
-        app:layout_constraintTop_toBottomOf="@+id/area" />
+        </LinearLayout>
 
-    <TextView
-        android:id="@+id/lblAltura"
-        android:layout_width="0dp"
-        android:layout_height="19dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:textColor="@android:color/background_dark"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/altura"
-        app:layout_constraintTop_toTopOf="@+id/altura" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/largura"
-        android:layout_width="0dp"
-        android:layout_height="17dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="28dp"
-        android:text="Largura média:"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/altura"
-        app:layout_constraintTop_toBottomOf="@+id/altura" />
+            <TextView
+                android:id="@+id/area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/txtAreaDados"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/lblLargura"
-        android:layout_width="0dp"
-        android:layout_height="19dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:textColor="@android:color/background_dark"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/largura"
-        app:layout_constraintTop_toTopOf="@+id/largura" />
+            <TextView
+                android:id="@+id/lblArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/background_dark"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp" />
 
-</android.support.constraint.ConstraintLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/altura"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/txtComprimentoDados"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lblAltura"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/background_dark"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/largura"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/txtLarguraDados"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/lblLargura"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/background_dark"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>

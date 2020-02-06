@@ -7,7 +7,6 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -18,34 +17,33 @@ import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.OutputStream;
 
 public class ActCamera extends AppCompatActivity implements View.OnClickListener{
 
     ImageView imageViewFoto;
-    private Bitmap foto;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_camera);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        imageViewFoto = (ImageView)findViewById(R.id.imageViewFoto);
+        imageViewFoto = findViewById(R.id.imageViewFoto);
         //Bundle extras = this.getIntent().getExtras();
 
         //byte[] byteArray = extras.getByteArray("foto");
         //Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
+        Bitmap foto;
         if(ActCameraCv.bitmap == null){
             foto = ActMain.bitmap;
         }else{
             foto = ActCameraCv.bitmap;
         }
 
-        Bitmap rotated = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(),foto.getHeight(), matrix, true);
+        Bitmap rotated = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
         imageViewFoto.setImageBitmap(rotated);
 
     }
@@ -63,13 +61,12 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
             case R.id.download:
                 ContentValues contentValues = new ContentValues();
                 Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-                OutputStream outputStream;
 
                 try {
                     //Salva a imagem
-                    outputStream = getContentResolver().openOutputStream(uri);
-                    boolean compressed = ActCameraCv.bitmap.compress(Bitmap.CompressFormat.PNG, 0,
-                            outputStream);
+                    assert uri != null;
+                    getContentResolver().openOutputStream(uri);
+                    /* boolean compressed = ActCameraCv.bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream); */
 
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     ActCameraCv.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);

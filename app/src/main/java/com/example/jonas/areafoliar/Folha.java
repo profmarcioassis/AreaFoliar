@@ -7,32 +7,22 @@ import java.io.Serializable;
 
 public class Folha implements Serializable, Parcelable {
     private String nome,area,altura,largura,data;
-    private int codigo;
+    private int codigo,tipo;
 
-    public Folha(String nome, String area, String altura, String largura, String data) {
+    public Folha(String nome, String area, String altura, String largura, String data, int tipo) {
         this.nome = nome;
         this.area = area;
         this.altura = altura;
         this.largura = largura;
         this.data = data;
-    }
-
-    public Folha(String nome, String area, String altura, String largura) {
-        this.nome = nome;
-        this.area = area;
-        this.altura = altura;
-        this.largura = largura;
-    }
-
-    public Folha(String nome){
-        this.nome = nome;
+        this.tipo = tipo;
     }
 
     public Folha(){
         this.codigo = 0;
     }
 
-    protected Folha(Parcel in) {
+    private Folha(Parcel in) {
         nome = in.readString();
         area = in.readString();
         altura = in.readString();
@@ -99,6 +89,14 @@ public class Folha implements Serializable, Parcelable {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
     }
 
     @Override

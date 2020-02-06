@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="0dp">
@@ -11,7 +10,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="14dp"
-        android:src="@drawable/ic_keyboard_arrow_down_black_32dp" />
+        android:src="@drawable/ic_keyboard_arrow_down_black_32dp"
+        android:layout_marginStart="14dp"
+        android:contentDescription="@string/desc_img_arrowDados" />
 
     <TextView
         android:id="@+id/textView"
@@ -22,11 +23,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center"
-        android:text="Histórico"
+        android:text="@string/historicoDados"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
         android:textColorLink="@android:color/background_dark"
-        android:textSize="24dp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
