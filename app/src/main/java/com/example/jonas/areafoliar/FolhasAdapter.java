@@ -23,12 +23,12 @@ import com.example.jonas.areafoliar.repositorio.FolhasRepositorio;
 
 import java.util.List;
 
-public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolderFolhas>{
+public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolderFolhas> {
     public List<String> values;
 
     private List<Folha> folhas;
 
-    FolhasAdapter(List<Folha> folhas){
+    FolhasAdapter(List<Folha> folhas) {
         this.folhas = folhas;
     }
 
@@ -36,13 +36,13 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
     @Override
     public FolhasAdapter.ViewHolderFolhas onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
-        View view = layoutInflater.inflate(R.layout.linha_config_dados,viewGroup,false);
+        View view = layoutInflater.inflate(R.layout.linha_config_dados, viewGroup, false);
         return new ViewHolderFolhas(view, viewGroup.getContext());
     }
 
     @Override
     public void onBindViewHolder(@NonNull FolhasAdapter.ViewHolderFolhas viewHolder, int i) {
-        if (folhas!= null && (folhas.size() > 0)){
+        if (folhas != null && (folhas.size() > 0)) {
             Folha folha = folhas.get(i);
             viewHolder.edtNome.setText(folha.getNome());
             viewHolder.edtArea.setText(folha.getArea());
@@ -56,13 +56,12 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
         return folhas.size();
     }
 
-    public class ViewHolderFolhas extends RecyclerView.ViewHolder{
-        public EditText edtNome,edtArea,edtAltura,edtLargura;
+    public class ViewHolderFolhas extends RecyclerView.ViewHolder {
+        public EditText edtNome, edtArea, edtAltura, edtLargura;
         private DadosOpenHelper dadosOpenHelper;
         private FolhasRepositorio folhasRepositorio;
         private SQLiteDatabase conexao;
         private Context contextoApp;
-
 
 
         ViewHolderFolhas(@NonNull final View itemView, final Context context) {
@@ -75,11 +74,11 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
             criarConexao();
             folhasRepositorio = new FolhasRepositorio(conexao);
 
-            itemView.setOnClickListener(new View.OnClickListener(){
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    if(folhas.size() > 0){
+                    if (folhas.size() > 0) {
                         final Folha folha;
                         folha = folhas.get(getLayoutPosition());
                         /*AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -117,13 +116,16 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
                         Button confirmar = dialog.findViewById(R.id.confBtn);
                         final EditText input = dialog.findViewById(R.id.edtNomeAlterarFolha);
                         input.setText(folha.getNome());
+                        input.setSelection(input.getText().length());
+
                         cancelar.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                try{
-                                    folhasRepositorio.alterar(folha.getCodigo(),input.getText().toString());
+                                try {
+                                    //Falta recalcular a área da média quando excluir e também atualizar o list com os dados novos!!!!!!
+                                    folhasRepositorio.excluir(folha.getCodigo());
                                     dialog.dismiss(); // fecha o dialog
-                                }catch (SQLException ignored){
+                                } catch (SQLException ignored) {
 
                                 }
                             }
@@ -131,8 +133,8 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
                         confirmar.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                folhasRepositorio.excluir(folha.getCodigo());
-                                dialog.dismiss(); // fecha o dialog
+                                folhasRepositorio.alterar(folha.getCodigo(), input.getText().toString());
+                                dialog.dismiss();
                             }
                         });
                         dialog.show();

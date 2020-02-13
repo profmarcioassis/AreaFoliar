@@ -259,7 +259,7 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 1) {
-            assert data != null;
+            if (data == null) throw new AssertionError();
             Uri imagemSelecionada = data.getData();
             String[] colunaArquivo = {MediaStore.Images.Media.DATA};
             assert imagemSelecionada != null;

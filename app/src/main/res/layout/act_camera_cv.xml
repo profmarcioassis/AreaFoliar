@@ -13,13 +13,12 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="32dp"
+        android:contentDescription="@string/desc_btn_galeriaOpenCv"
         android:src="@drawable/foto"
         opencv:backgroundTint="@android:color/black"
         opencv:layout_constraintBottom_toBottomOf="parent"
         opencv:layout_constraintEnd_toEndOf="parent"
-        opencv:layout_constraintHorizontal_bias="0.92"
-        opencv:layout_constraintStart_toStartOf="parent"
-        android:contentDescription="@string/desc_btn_galeriaOpenCv" />
+        opencv:layout_constraintStart_toEndOf="@+id/camera" />
 
     <org.opencv.android.JavaCameraView
         android:layout_width="match_parent"
