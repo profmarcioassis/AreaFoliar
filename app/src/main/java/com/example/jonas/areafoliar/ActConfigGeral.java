@@ -7,11 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 
 public class ActConfigGeral extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private CheckBox checkbox3,checkbox4,checkbox5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,16 +21,55 @@ public class ActConfigGeral extends AppCompatActivity {
         setContentView(R.layout.act_config_geral);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        validaCheckBox();
+        sharedPreferences = getSharedPreferences("valorLadoPref", Context.MODE_PRIVATE);
+        int valor = sharedPreferences.getInt("lado", 5);
+        checkbox3 = findViewById(R.id.checkbox3);
+        checkbox4 = findViewById(R.id.checkbox4);
+        checkbox5 = findViewById(R.id.checkbox5);
+        if(valor == 3){
+            checkbox3.setChecked(true);
+            checkbox4.setChecked(false);
+            checkbox5.setChecked(false);
+        }else if(valor == 4){
+            checkbox3.setChecked(false);
+            checkbox4.setChecked(true);
+            checkbox5.setChecked(false);
+        }else{
+            checkbox3.setChecked(false);
+            checkbox4.setChecked(false);
+            checkbox5.setChecked(true);
+        }
     }
 
-    public void validaCheckBox(){
-        sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE);
-        String result = sharedPreferences.getString(getString(R.string.pref_text), "");
+    public void validaCheckBox(int check){
+        sharedPreferences = getSharedPreferences("valorLadoPref", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
-        CheckBox checkbox3 = findViewById(R.id.checkbox3);
-        CheckBox checkbox4 = findViewById(R.id.checkbox4);
-        CheckBox checkbox5 = findViewById(R.id.checkbox5);
+        checkbox3 = findViewById(R.id.checkbox3);
+        checkbox4 = findViewById(R.id.checkbox4);
+        checkbox5 = findViewById(R.id.checkbox5);
+        if(check == 3){
+            checkbox3.setChecked(true);
+            checkbox4.setChecked(false);
+            checkbox5.setChecked(false);
+            editor.putInt("lado",3);
+            editor.commit();
+        }else if(check == 4){
+            checkbox3.setChecked(false);
+            checkbox4.setChecked(true);
+            checkbox5.setChecked(false);
+            editor.putInt("lado",4);
+            editor.commit();
+        }else{
+            checkbox3.setChecked(false);
+            checkbox4.setChecked(false);
+            checkbox5.setChecked(true);
+            editor.putInt("lado",5);
+            editor.commit();
+        }
+
+        /*sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE);
+        String result = sharedPreferences.getString(getString(R.string.pref_text), "");
 
         if(result.equals("3")){
             checkbox3.setChecked(true);
@@ -39,14 +80,30 @@ public class ActConfigGeral extends AppCompatActivity {
             editor = sharedPreferences.edit();
             editor.putString(getString(R.string.pref_text), "5");
             editor.apply();
-        }
+        }*/
     }
 
 
     public void onCheckboxClicked(View view) {
-        // Is the view now checked?
         boolean checked = ((CheckBox) view).isChecked();
-        sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE);
+        switch (view.getId()) {
+            case R.id.checkbox3:
+                if (checked) {
+                    validaCheckBox(3);
+                }
+                break;
+            case R.id.checkbox4:
+                if (checked) {
+                    validaCheckBox(4);
+                }
+                break;
+            case R.id.checkbox5:
+                if (checked) {
+                    validaCheckBox(5);
+                }
+                break;
+        }
+        /*sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE);
         // Check which checkbox was clicked
         switch (view.getId()) {
             case R.id.checkbox3:
@@ -70,7 +127,7 @@ public class ActConfigGeral extends AppCompatActivity {
                     editor.apply();
                 }
                 break;
-        }
+        }*/
     }
 
 }

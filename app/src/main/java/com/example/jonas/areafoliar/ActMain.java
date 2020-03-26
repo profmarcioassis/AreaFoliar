@@ -177,38 +177,41 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
             imageViewFoto.setImageBitmap(rotated);*/
         //}
         if (requestCode == 2) {
-            assert data != null;
-            Uri imagemSelecionada = data.getData();
-            String[] colunaArquivo = {MediaStore.Images.Media.DATA};
-            assert imagemSelecionada != null;
-            @SuppressLint("Recycle") Cursor c = getContentResolver().query(imagemSelecionada, colunaArquivo, null, null, null);
-            assert c != null;
-            c.moveToFirst();
-            int columIndex = c.getColumnIndex(colunaArquivo[0]);
-            String picPath = c.getString(columIndex);
-            bitmap = BitmapFactory.decodeFile(picPath);
+            if (data == null){
+                Toast.makeText(getApplicationContext(), "Escolha uma foto", Toast.LENGTH_LONG).show();
+            }else{
+                Uri imagemSelecionada = data.getData();
+                String[] colunaArquivo = {MediaStore.Images.Media.DATA};
+                assert imagemSelecionada != null;
+                @SuppressLint("Recycle") Cursor c = getContentResolver().query(imagemSelecionada, colunaArquivo, null, null, null);
+                assert c != null;
+                c.moveToFirst();
+                int columIndex = c.getColumnIndex(colunaArquivo[0]);
+                String picPath = c.getString(columIndex);
+                bitmap = BitmapFactory.decodeFile(picPath);
 
-            ImageMat = new Mat();
-            //Cria um bitmap com a configuração ARGB_8888
-            Bitmap bmp = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-            //Transforma o Bitmap em Mat
-            Utils.bitmapToMat(bmp, ImageMat);
-            //Cria uma matriz com o tamanho e o tipo do Mat posterior
-            result = new Mat(ImageMat.size(), ImageMat.type());
-            //Converte a imagem em tons de cinza
-            Imgproc.cvtColor(ImageMat, result, Imgproc.COLOR_RGB2GRAY);
-            //Cria as bounding boxes
-            result = createBoundingBoxes(result);
-            //Converte o Mat em bitmap para salvar na tela
-            Utils.matToBitmap(result, bitmap);
-            //Cria objeto de ByteArray
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            //Converte o bitmap para JPEG
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            //Abre a tela para mostrar o resultado
-            Intent it = new Intent(this, ActCamera.class);
-            //Inicia a intent
-            startActivity(it);
+                ImageMat = new Mat();
+                //Cria um bitmap com a configuração ARGB_8888
+                Bitmap bmp = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                //Transforma o Bitmap em Mat
+                Utils.bitmapToMat(bmp, ImageMat);
+                //Cria uma matriz com o tamanho e o tipo do Mat posterior
+                result = new Mat(ImageMat.size(), ImageMat.type());
+                //Converte a imagem em tons de cinza
+                Imgproc.cvtColor(ImageMat, result, Imgproc.COLOR_RGB2GRAY);
+                //Cria as bounding boxes
+                result = createBoundingBoxes(result);
+                //Converte o Mat em bitmap para salvar na tela
+                Utils.matToBitmap(result, bitmap);
+                //Cria objeto de ByteArray
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                //Converte o bitmap para JPEG
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                //Abre a tela para mostrar o resultado
+                Intent it = new Intent(this, ActCamera.class);
+                //Inicia a intent
+                startActivity(it);
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -218,7 +221,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
             dadosOpenHelper = new DadosOpenHelper(this);
             conexao = dadosOpenHelper.getWritableDatabase();
             folhaRepositorio = new FolhasRepositorio(conexao);
-            Toast.makeText(getApplicationContext(), "Conexão criada com sucesso", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Conexão criada com sucesso!", Toast.LENGTH_SHORT).show();
         }catch (SQLException ex){
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -295,9 +298,11 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         int areaQuadradoCm;
         int alturaQuadrado;
 
-        sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE);
-        String result = sharedPreferences.getString(getString(R.string.pref_text), "");
-        alturaQuadrado = Integer.parseInt(result);
+        //sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE);
+        //String result = sharedPreferences.getString(getString(R.string.pref_text), "");
+        //alturaQuadrado = Integer.parseInt(result);
+        SharedPreferences sharedPreferences = getSharedPreferences("valorLadoPref", Context.MODE_PRIVATE);
+        alturaQuadrado = sharedPreferences.getInt("lado", 5);
         areaQuadradoCm = alturaQuadrado * alturaQuadrado;
 
         for (int i = 0; i < contours.size(); i++) {

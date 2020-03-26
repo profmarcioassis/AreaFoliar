@@ -1,6 +1,7 @@
 package com.example.jonas.areafoliar;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.SQLException;
@@ -15,7 +16,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.jonas.areafoliar.database.DadosOpenHelper;
@@ -202,13 +205,38 @@ public class ActDados extends AppCompatActivity{
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_dados) {
-            final AlertDialog.Builder builderDialog = new AlertDialog.Builder(this);
+            /*final AlertDialog.Builder builderDialog = new AlertDialog.Builder(this);
             final View customLayout = getLayoutInflater().inflate(R.layout.dialog_dados_info, null);
             builderDialog.setView(customLayout);
             final AlertDialog dialog = builderDialog.create();
+            dialog.show();*/
+
+            final Dialog dialog = new Dialog(this);
+
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_dados_info); // seu layout
+            dialog.setCancelable(false);
+
+            Button fechar = dialog.findViewById(R.id.fecharBtn);
+            fechar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        dialog.dismiss(); // fecha o dialog
+                    } catch (SQLException ignored) {
+
+                    }
+                }
+            });
             dialog.show();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent it2 = new Intent(this, ActMain.class);
+        startActivity(it2);
     }
 }

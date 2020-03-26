@@ -46,7 +46,7 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
             Folha folha = folhas.get(i);
             viewHolder.edtNome.setText(folha.getNome());
             viewHolder.edtArea.setText(folha.getArea());
-            viewHolder.edtArea.setText(folha.getAltura());
+            viewHolder.edtAltura.setText(folha.getAltura());
             viewHolder.edtLargura.setText(folha.getLargura());
         }
     }
