@@ -81,36 +81,12 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
                     if (folhas.size() > 0) {
                         final Folha folha;
                         folha = folhas.get(getLayoutPosition());
-                        /*AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                        final EditText input = new EditText(v.getContext());
-                        final TextView txtNomeFolha = new TextView(v.getContext());
-                        txtNomeFolha.setText(folha.getNome());
-                        builder.setView(txtNomeFolha);
-                        builder.setView(input);
-                        builder.setPositiveButton("Confirmar Alterações",  new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                //Corrigir isso aqui!!!!
-                                Toast.makeText(context, input.getText().toString(), Toast.LENGTH_SHORT).show();
-                                try{
-                                    folhasRepositorio.alterar(folha.getCodigo(),input.getText().toString());
-                                }catch (SQLException ignored){
 
-                                }
-                            }
-                        });
-                        builder.setNegativeButton("Excluir Folha", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                folhasRepositorio.excluir(folha.getCodigo());
-                            }
-                        });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();*/
                         final Dialog dialog = new Dialog(v.getContext());
 
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         dialog.setContentView(R.layout.dialog_alterarfolha); // seu layout
-                        dialog.setCancelable(false);
+                        dialog.setCancelable(true);
 
                         Button cancelar = dialog.findViewById(R.id.excBtn);
                         Button confirmar = dialog.findViewById(R.id.confBtn);

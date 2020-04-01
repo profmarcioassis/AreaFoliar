@@ -38,4 +38,5 @@
     <string name="dadosNav">Dados Salvos</string>
     <string name="pref_key">user_quadrado</string>
     <string name="pref_text">preference_text</string>
+    <string name="stringDescIconFolha">ícone folha</string>
 </resources>
