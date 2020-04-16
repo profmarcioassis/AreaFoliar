@@ -1,4 +1,4 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 buildscript{
     repositories{
@@ -16,8 +16,8 @@ android{
     defaultConfig{
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 2410
-        versionName "2.4.10"
+        versionCode 3000
+        versionName "3.0.0"
     }
 
     sourceSets{
