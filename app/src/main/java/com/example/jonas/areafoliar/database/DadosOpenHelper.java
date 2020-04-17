@@ -6,6 +6,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DadosOpenHelper extends SQLiteOpenHelper {
 
+    private static final String DATABASE_ALTER_FOLHA_1 = "ALTER TABLE FOLHA ADD COLUMN TIPO INTEGER NOT NULL;";
+
+
     public DadosOpenHelper(Context context) {
         super(context, "Dados", null, 2);
     }
@@ -17,6 +20,8 @@ public class DadosOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if (oldVersion < 2) {
+            db.execSQL(DATABASE_ALTER_FOLHA_1);
+        }   
     }
 }
