@@ -59,21 +59,15 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
     private FolhasRepositorio folhaRepositorio;
     private int cont = 1;
     private String data_completa;
-    private SharedPreferences sharedPreferences;
 
     BaseLoaderCallback mCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
-            switch (status) {
-                case BaseLoaderCallback.SUCCESS: {
-                    Log.i(TAG, "OpenCV loaded successfully");
-                    mOpenCvCameraView.enableView();
-                    break;
-                }
-                default: {
-                    super.onManagerConnected(status);
-                    break;
-                }
+            if (status == BaseLoaderCallback.SUCCESS) {
+                Log.i(TAG, "OpenCV loaded successfully");
+                mOpenCvCameraView.enableView();
+            } else {
+                super.onManagerConnected(status);
             }
         }
     };
@@ -262,7 +256,8 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 1) {
             if (data == null){
-                Toast.makeText(getApplicationContext(), "Escolha uma foto", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Escolha uma foto", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Choose a photo", Toast.LENGTH_LONG).show();
             }else{
                 Uri imagemSelecionada = data.getData();
                 String[] colunaArquivo = {MediaStore.Images.Media.DATA};

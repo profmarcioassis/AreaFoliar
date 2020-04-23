@@ -31,7 +31,8 @@ public class HistoricoViewHolder extends GroupViewHolder {
     @Override
     public void expand() {
         if(hist.getItems().size() <= 0){
-            Toast.makeText(item.getContext(),"Não há dados ainda", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(item.getContext(),"Não há dados ainda", Toast.LENGTH_SHORT).show();
+            Toast.makeText(item.getContext(),"No data yet", Toast.LENGTH_SHORT).show();
         }
         animateExpand();
     }

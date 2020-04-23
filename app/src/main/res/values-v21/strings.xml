@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="name_linha_config_dados">Name:</string>
+    <string name="area_linha_config_dados">Area:</string>
+    <string name="width_linha_config_dados">Width:</string>
+    <string name="length_linha_config_dados">Length:</string>
+    <string name="widht_value_linha_config_dados">Widht value</string>
+    <string name="lenth_value_linha_config_dados">Lenth value</string>
+    <string name="area_value_linha_config_dados">Area value</string>
+    <string name="name_of_leaf_linha_config_dados">Name of leaf</string>
+    <string name="close_dialog_dados_info">Close</string>
+    <string name="leaf_name_dialog_alterarfolha">Ex: Leaf of Mamona - 1</string>
+    <string name="confirm_dialog_alterar_folha">Confirm</string>
+    <string name="delete_dialog_alterar_folha">Delete</string>
+    <string name="cm3_config_geral">3 cm</string>
+    <string name="cm4_config_geral">4 cm</string>
+    <string name="cm5_config_geral">5 cm</string>
+    <string name="test_name_act_config_dados">Test Name</string>
+</resources>

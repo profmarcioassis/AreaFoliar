@@ -15,14 +15,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -33,10 +31,10 @@ import android.widget.Toast;
 import com.example.jonas.areafoliar.database.DadosOpenHelper;
 import com.example.jonas.areafoliar.repositorio.FolhasRepositorio;
 
-import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
+//import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
@@ -58,26 +56,20 @@ import java.util.List;
 public class ActMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static final int TELA_CAMERA = 1;
-    private CardView camera_act_main, galeria_act_main,dados_salvos_act_main,informacao_act_main;
-    private Mat result;
     private double altQuad, largQuad;
     private Mat ImageMat;
     public static Bitmap bitmap;
     int total = 0;
     double altura = 0,largura = 0,areaQuadradoPx = 0,areaFolhaCm = 0;
-    private Folha folha;
-    private SQLiteDatabase conexao;
-    private DadosOpenHelper dadosOpenHelper;
     private FolhasRepositorio folhaRepositorio;
     private int cont = 1;
     private String data_completa;
-    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -89,23 +81,18 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
         }
-
-        camera_act_main = findViewById(R.id.camera_act_main);
-        galeria_act_main = findViewById(R.id.galeria_act_main);
-        dados_salvos_act_main = findViewById(R.id.dados_salvos_act_main);
-        informacao_act_main = findViewById(R.id.informacao_act_main);
         (findViewById(R.id.camera_act_main)).setOnClickListener(this);
         (findViewById(R.id.galeria_act_main)).setOnClickListener(this);
         (findViewById(R.id.dados_salvos_act_main)).setOnClickListener(this);
         (findViewById(R.id.informacao_act_main)).setOnClickListener(this);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         criarConexao();
@@ -113,7 +100,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -144,7 +131,6 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -161,7 +147,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
             startActivityForResult(itConfig, 0);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -178,7 +164,8 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         //}
         if (requestCode == 2) {
             if (data == null){
-                Toast.makeText(getApplicationContext(), "Escolha uma foto", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Escolha uma foto", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Choose a photo", Toast.LENGTH_LONG).show();
             }else{
                 Uri imagemSelecionada = data.getData();
                 String[] colunaArquivo = {MediaStore.Images.Media.DATA};
@@ -196,7 +183,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 //Transforma o Bitmap em Mat
                 Utils.bitmapToMat(bmp, ImageMat);
                 //Cria uma matriz com o tamanho e o tipo do Mat posterior
-                result = new Mat(ImageMat.size(), ImageMat.type());
+                Mat result = new Mat(ImageMat.size(), ImageMat.type());
                 //Converte a imagem em tons de cinza
                 Imgproc.cvtColor(ImageMat, result, Imgproc.COLOR_RGB2GRAY);
                 //Cria as bounding boxes
@@ -218,8 +205,8 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
 
     public void criarConexao(){
         try{
-            dadosOpenHelper = new DadosOpenHelper(this);
-            conexao = dadosOpenHelper.getWritableDatabase();
+            DadosOpenHelper dadosOpenHelper = new DadosOpenHelper(this);
+            SQLiteDatabase conexao = dadosOpenHelper.getWritableDatabase();
             folhaRepositorio = new FolhasRepositorio(conexao);
             Toast.makeText(getApplicationContext(), "Conexão criada com sucesso!", Toast.LENGTH_SHORT).show();
         }catch (SQLException ex){
@@ -260,6 +247,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         }
     }
 
+
     static double angle(Point pt1, Point pt2, Point pt0) {
         double dx1 = pt1.x - pt0.x;
         double dy1 = pt1.y - pt0.y;
@@ -267,6 +255,98 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         double dy2 = pt2.y - pt0.y;
         return (dx1 * dx2 + dy1 * dy2) / Math.sqrt((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2) + 1e-10);
     }
+
+    /*Point2f GetPointAfterRotate(Point2f inputpoint,Point2f center,double angle){
+        Point2d preturn;
+        preturn.x = (inputpoint.x - center.x)*Math.cos(-angle) - (inputpoint.y - center.y)*Math.sin(-angle)+center.x;
+        preturn.y = (inputpoint.x - center.x)*Math.sin(-angle) + (inputpoint.y - center.y)*Math.cos(-angle)+center.y;
+        return preturn;
+    }*/
+
+
+    /*Point GetPointAfterRotate(Point inputpoint,Point center,double angle){
+        Point preturn = null;
+        assert false;
+        preturn.x = (inputpoint.x - center.x)*Math.cos(-1*angle) - (inputpoint.y - center.y)*Math.sin(-1*angle)+center.x;
+        preturn.y = (inputpoint.x - center.x)*Math.sin(-1*angle) + (inputpoint.y - center.y)*Math.cos(-1*angle)+center.y;
+        return preturn;
+    }ESSE DEU CERTO!*/
+
+    //KARLA - double getOrientation(vector<Point> &pts, Point2f& pos){
+    /*private double getOrientation(MatOfPoint ptsMat, Mat img) {
+        List<Point> pts = ptsMat.toList();
+        //Construct a buffer used by the pca analysis
+        /*KARLA -Mat data_pts = Mat(pts.size(), 2, CV_64FC1);
+        for (int i = 0; i < data_pts.rows; ++i){
+            data_pts.at<double>(i, 0) = pts[i].x;
+            data_pts.at<double>(i, 1) = pts[i].y;
+        }
+
+        Mat dataPts = new Mat(pts.size(), 2, CvType.CV_64FC1);
+        double[] dataPtsData = new double[(int) (dataPts.total() * dataPts.channels())];
+        for (int i = 0; i < dataPts.rows(); i++) {
+            dataPtsData[i * dataPts.cols()] = pts.get(i).x;
+            dataPtsData[i * dataPts.cols() + 1] = pts.get(i).y;
+        }
+        dataPts.put(0, 0, dataPtsData);
+
+        //Perform PCA analysis
+        /*KARLA -PCA pca_analysis(data_pts, Mat(), PCA::DATA_AS_ROW);
+
+        //Store the position of the object
+        pos = Point2f(pca_analysis.mean.at<double>(0, 0),
+        pca_analysis.mean.at<double>(0, 1));
+
+        // Perform PCA analysis
+        Mat mean = new Mat();
+        Mat eigenvectors = new Mat();
+        Mat eigenvalues = new Mat();
+        Core.PCAProject(dataPts, mean, eigenvectors, eigenvalues);
+        double[] meanData = new double[(int) (mean.total() * mean.channels())];
+        mean.get(0, 0, meanData);
+
+        //Store the eigenvalues and eigenvectors
+        /*KARLA - vector<Point2d> e igen_vecs(2);
+        vector<double> eigen_val(2);
+        for (int i = 0; i < 2; ++i){
+            eigen_vecs[i] = Point2d(pca_analysis.eigenvectors.at<double>(i, 0),
+            pca_analysis.eigenvectors.at<double>(i, 1));
+            eigen_val[i] = pca_analysis.eigenvalues.at<double>(i,0);
+        }
+        return atan2(eigen_vecs[0].y, eigen_vecs[0].x);
+
+        // Store the eigenvalues and eigenvectors
+        double[] eigenvectorsData = new double[(int) (eigenvectors.total() * eigenvectors.channels())];
+        double[] eigenvaluesData = new double[(int) (eigenvalues.total() * eigenvalues.channels())];
+        eigenvectors.get(0, 0, eigenvectorsData);
+        eigenvalues.get(0, 0, eigenvaluesData);
+        return  Math.atan2(eigenvectorsData[1], eigenvectorsData[0]);
+    }ESSE DEU CERTO*/
+
+    /*void pca(MatOfPoint contours, int i){
+        Mat contour_mat = contours;
+        //KARLA - Point2f* pos = new Point2f();
+        Mat pos = new Mat();
+        double dOrient =  getOrientation(contours, pos);
+        int xmin = 99999;
+        int xmax = 0;
+        int ymin = 99999;
+        int ymax = 0;
+
+        //KARLA - for (size_t j = 0;j<contours[i].size();j++){
+        for (int j = 0; j < contour_mat.; j++){
+            //KARLA - contours[i][j] = GetPointAfterRotate(contours[i][j],(Point)*pos,dOrient);
+            contours[i][j] = GetPointAfterRotate(contours.toArray()[i], pos[0].toArray()[0],dOrient);
+            if (contours.get(i).toArray()[j].x < xmin)
+                xmin = (int)contours.get(i).toArray()[j].x;
+            if (contours.get(i).toArray()[j].x > xmax)
+                xmax = (int)contours.get(i).toArray()[j].x;
+            if (contours.get(i).toArray()[j].y < ymin)
+                ymin = (int)contours.get(i).toArray()[j].y;
+            if (contours.get(i).toArray()[j].y > ymax)
+                ymax = (int)contours.get(i).toArray()[j].y;
+        }
+    }*/
 
     protected Mat createBoundingBoxes(Mat src) {
         double mediaAltura = 0,mediaLargura = 0,mediaArea = 0;
@@ -345,7 +425,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 cal.setTime(data);
                 Date data_atual = cal.getTime();
                 data_completa = dateFormat.format(data_atual);
-                folha = new Folha();
+                Folha folha = new Folha();
                 folha.setNome(data_completa + " " + cont);
                 folha.setArea(areaFolhaCm + "");
                 folha.setAltura(altura + "");

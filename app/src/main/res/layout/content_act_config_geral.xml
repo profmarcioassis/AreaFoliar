@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -15,7 +14,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="88dp"
         android:gravity="center"
-        android:text="Defina a dimensão do lado do quadrado utilizado:"
+        android:text="@string/configGeralQuad"
         android:textColor="@android:color/black"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -43,7 +42,8 @@
             android:layout_marginRight="25dp"
             android:checked="false"
             android:onClick="onCheckboxClicked"
-            android:text="3 cm" />
+            android:text="@string/cm3_config_geral"
+            android:layout_marginEnd="25dp" />
 
         <CheckBox
             android:id="@+id/checkbox4"
@@ -52,7 +52,8 @@
             android:layout_marginRight="25dp"
             android:checked="false"
             android:onClick="onCheckboxClicked"
-            android:text="4 cm" />
+            android:text="@string/cm4_config_geral"
+            android:layout_marginEnd="25dp" />
 
         <CheckBox
             android:id="@+id/checkbox5"
@@ -60,7 +61,7 @@
             android:layout_height="wrap_content"
             android:checked="false"
             android:onClick="onCheckboxClicked"
-            android:text="5 cm" />
+            android:text="@string/cm5_config_geral" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

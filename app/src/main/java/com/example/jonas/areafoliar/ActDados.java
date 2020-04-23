@@ -2,23 +2,19 @@ package com.example.jonas.areafoliar;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.jonas.areafoliar.database.DadosOpenHelper;
@@ -47,10 +43,7 @@ public class ActDados extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_dados);
-        //ArrayList<Historico> historicos = new ArrayList<>();
         listDados = findViewById(R.id.listDados);
-        //ConstraintLayout layoutContentMain = findViewById(R.id.layoutContentDados);
-        //CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinatorLayout);
         criarConexao();
         listDados.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -67,40 +60,52 @@ public class ActDados extends AppCompatActivity{
         mesAtual = data_completa.substring(3,5);
         switch (mesAtual) {
             case "01":
-                nomeMesAtual = "Janeiro";
+                //nomeMesAtual = "Janeiro";
+                nomeMesAtual = "January";
                 break;
             case "02":
-                nomeMesAtual = "Fevereiro";
+                //nomeMesAtual = "Fevereiro";
+                nomeMesAtual = "February";
                 break;
             case "03":
-                nomeMesAtual = "Março";
+                //nomeMesAtual = "Março";
+                nomeMesAtual = "March";
                 break;
             case "04":
-                nomeMesAtual = "Abril";
+                //nomeMesAtual = "Abril";
+                nomeMesAtual = "April";
                 break;
             case "05":
-                nomeMesAtual = "Maio";
+                //nomeMesAtual = "Maio";
+                nomeMesAtual = "May";
                 break;
             case "06":
-                nomeMesAtual = "Junho";
+                //nomeMesAtual = "Junho";
+                nomeMesAtual = "June";
                 break;
             case "07":
-                nomeMesAtual = "Julho";
+                //nomeMesAtual = "Julho";
+                nomeMesAtual = "July";
                 break;
             case "08":
-                nomeMesAtual = "Agosto";
+                //nomeMesAtual = "Agosto";
+                nomeMesAtual = "August";
                 break;
             case "09":
-                nomeMesAtual = "Setembro";
+                //nomeMesAtual = "Setembro";
+                nomeMesAtual = "September";
                 break;
             case "10":
-                nomeMesAtual = "Outubro";
+                //nomeMesAtual = "Outubro";
+                nomeMesAtual = "October";
                 break;
             case "11":
-                nomeMesAtual = "Novembro";
+                //nomeMesAtual = "Novembro";
+                nomeMesAtual = "November";
                 break;
             default:
-                nomeMesAtual = "Dezembro";
+                //nomeMesAtual = "Dezembro";
+                nomeMesAtual = "December";
                 break;
         }
         for(int i = 0; i < dados.size(); i ++){
@@ -117,13 +122,16 @@ public class ActDados extends AppCompatActivity{
             }
         }
         ArrayList<Historico> historicos = new ArrayList<>();
-        Historico antigos = new Historico("Mais antigo",calculaMedia(maisAntigo));
+        //Historico antigos = new Historico("Mais antigo",calculaMedia(maisAntigo));
+        Historico antigos = new Historico("Older",calculaMedia(maisAntigo));
         historicos.add(antigos);
-        Historico passado = new Historico("Mês passado",calculaMedia(mesPassado));
+        //Historico passado = new Historico("Mês passado",calculaMedia(mesPassado));
+        Historico passado = new Historico("Last month",calculaMedia(mesPassado));
         historicos.add(passado);
         Historico presente = new Historico(nomeMesAtual,calculaMedia(mesPresente));
         historicos.add(presente);
-        Historico recente = new Historico("Recentes",calculaMedia(maisRecentes));
+        //Historico recente = new Historico("Hoje",calculaMedia(maisRecentes));
+        Historico recente = new Historico("Today",calculaMedia(maisRecentes));
         historicos.add(recente);
         folhas2Adapter = new Folhas2Adapter(historicos);
         //folhasAdapter = new FolhasAdapter(dados);
@@ -163,13 +171,16 @@ public class ActDados extends AppCompatActivity{
             }
         }
         ArrayList<Historico> historicos = new ArrayList<>();
-        Historico antigos = new Historico("Mais antigo",calculaMedia(maisAntigo));
+        //Historico antigos = new Historico("Mais antigo",calculaMedia(maisAntigo));
+        Historico antigos = new Historico("Older",calculaMedia(maisAntigo));
         historicos.add(antigos);
-        Historico passado = new Historico("Mês passado",calculaMedia(mesPassado));
+        //Historico passado = new Historico("Mês passado",calculaMedia(mesPassado));
+        Historico passado = new Historico("Last month",calculaMedia(mesPassado));
         historicos.add(passado);
         Historico presente = new Historico(nomeMesAtual,calculaMedia(mesPresente));
         historicos.add(presente);
-        Historico recente = new Historico("Recentes",calculaMedia(maisRecentes));
+        //Historico recente = new Historico("Hoje",calculaMedia(maisRecentes));
+        Historico recente = new Historico("Today",calculaMedia(maisRecentes));
         historicos.add(recente);
 
         folhas2Adapter = new Folhas2Adapter(historicos);

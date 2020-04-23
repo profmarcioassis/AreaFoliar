@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="356dp"
     android:layout_height="match_parent">
@@ -21,7 +22,9 @@
         android:layout_margin="10dp"
         android:ems="10"
         android:id="@+id/edtNomeAlterarFolha"
-        android:hint="Ex: Folha de Mamona - 1"/>
+        android:hint="@string/leaf_name_dialog_alterar_folha"
+        android:autofillHints="Name of leaf"
+        android:inputType="text" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -36,18 +39,19 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="15dp"
             android:textColor="@color/colorPrimary"
-            android:text="Confirmar"
+            android:text="@string/confirm_dialog_alterar_folha"
             android:background="@drawable/button_info_dados"
-            />
+            android:layout_marginEnd="15dp"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/excBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimary"
-            android:text="Excluir"
+            android:text="@string/delete_dialog_alterar_folha"
             android:background="@drawable/button_info_dados"
-            />
+            tools:ignore="ButtonStyle" />
     </LinearLayout>
 
 

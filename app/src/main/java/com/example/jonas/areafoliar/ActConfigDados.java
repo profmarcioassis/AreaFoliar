@@ -66,9 +66,11 @@ public class ActConfigDados extends AppCompatActivity {
             finish();
         }catch (SQLException ex){
             AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-            dlg.setTitle("Erro");
+            //dlg.setTitle("Erro");
+            dlg.setTitle("Error");
             dlg.setMessage(ex.getMessage());
-            dlg.setNeutralButton("Confirmar",null);
+            //dlg.setNeutralButton("Confirmar",null);
+            dlg.setNeutralButton("Confirm",null);
             dlg.show();
         }
     }

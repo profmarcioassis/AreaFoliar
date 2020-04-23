@@ -9,10 +9,10 @@
         android:id="@+id/arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="14dp"
+        android:contentDescription="@string/desc_img_arrowDados"
         android:src="@drawable/ic_keyboard_arrow_down_black_32dp"
-        android:layout_marginStart="14dp"
-        android:contentDescription="@string/desc_img_arrowDados" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView"

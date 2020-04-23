@@ -22,6 +22,6 @@ public class DadosOpenHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
             db.execSQL(DATABASE_ALTER_FOLHA_1);
-        }   
+        }
     }
 }
