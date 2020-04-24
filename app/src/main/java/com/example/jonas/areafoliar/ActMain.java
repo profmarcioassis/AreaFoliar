@@ -34,11 +34,12 @@ import com.example.jonas.areafoliar.repositorio.FolhasRepositorio;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
-//import org.opencv.core.CvType;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -51,6 +52,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
+
+import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
 
 
 public class ActMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -60,10 +64,15 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     private Mat ImageMat;
     public static Bitmap bitmap;
     int total = 0;
-    double altura = 0,largura = 0,areaQuadradoPx = 0,areaFolhaCm = 0;
+    double altura = 0, largura = 0, areaQuadradoPx = 0, areaFolhaCm = 0;
     private FolhasRepositorio folhaRepositorio;
     private int cont = 1;
     private String data_completa;
+    private static List<MatOfPoint2f> square = new ArrayList<>();
+    private static List<MatOfPoint> leaves = new ArrayList<>();
+    private static List<MatOfPoint> leavesPCA = new ArrayList<>();
+    private static boolean area, sumareas, wid, len, widlen, avedev, rem, per;
+    static float areaQuadrado = 9;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +152,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
             Intent it = new Intent(this, ActDados.class);
             startActivityForResult(it, 0);
         } else if (id == R.id.nav_config) {
-            Intent itConfig = new Intent(this,ActConfigGeral.class);
+            Intent itConfig = new Intent(this, ActConfigGeral.class);
             startActivityForResult(itConfig, 0);
         }
 
@@ -163,10 +172,10 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
             imageViewFoto.setImageBitmap(rotated);*/
         //}
         if (requestCode == 2) {
-            if (data == null){
+            if (data == null) {
                 //Toast.makeText(getApplicationContext(), "Escolha uma foto", Toast.LENGTH_LONG).show();
                 Toast.makeText(getApplicationContext(), "Choose a photo", Toast.LENGTH_LONG).show();
-            }else{
+            } else {
                 Uri imagemSelecionada = data.getData();
                 String[] colunaArquivo = {MediaStore.Images.Media.DATA};
                 assert imagemSelecionada != null;
@@ -188,6 +197,8 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 Imgproc.cvtColor(ImageMat, result, Imgproc.COLOR_RGB2GRAY);
                 //Cria as bounding boxes
                 result = createBoundingBoxes(result);
+                //findObjects();
+                //surfaceCalc();
                 //Converte o Mat em bitmap para salvar na tela
                 Utils.matToBitmap(result, bitmap);
                 //Cria objeto de ByteArray
@@ -203,21 +214,21 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void criarConexao(){
-        try{
+    public void criarConexao() {
+        try {
             DadosOpenHelper dadosOpenHelper = new DadosOpenHelper(this);
             SQLiteDatabase conexao = dadosOpenHelper.getWritableDatabase();
             folhaRepositorio = new FolhasRepositorio(conexao);
             Toast.makeText(getApplicationContext(), "Conexão criada com sucesso!", Toast.LENGTH_SHORT).show();
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     static {
-        if(!OpenCVLoader.initDebug()){
+        if (!OpenCVLoader.initDebug()) {
             Log.i("OpenCv", "OpenCV loaded failed");
-        }else {
+        } else {
             Log.i("OpenCv", "OpenCV loaded successfully");
         }
     }
@@ -241,12 +252,11 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.informacao_act_main:
-                Intent itConfig = new Intent(this,ActConfigGeral.class);
+                Intent itConfig = new Intent(this, ActConfigGeral.class);
                 startActivityForResult(itConfig, 0);
                 break;
         }
     }
-
 
     static double angle(Point pt1, Point pt2, Point pt0) {
         double dx1 = pt1.x - pt0.x;
@@ -256,100 +266,55 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         return (dx1 * dx2 + dy1 * dy2) / Math.sqrt((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2) + 1e-10);
     }
 
-    /*Point2f GetPointAfterRotate(Point2f inputpoint,Point2f center,double angle){
-        Point2d preturn;
-        preturn.x = (inputpoint.x - center.x)*Math.cos(-angle) - (inputpoint.y - center.y)*Math.sin(-angle)+center.x;
-        preturn.y = (inputpoint.x - center.x)*Math.sin(-angle) + (inputpoint.y - center.y)*Math.cos(-angle)+center.y;
-        return preturn;
-    }*/
-
-
-    /*Point GetPointAfterRotate(Point inputpoint,Point center,double angle){
+    static Point GetPointAfterRotate(Point inputpoint, Point center, double angle) {
         Point preturn = null;
-        assert false;
-        preturn.x = (inputpoint.x - center.x)*Math.cos(-1*angle) - (inputpoint.y - center.y)*Math.sin(-1*angle)+center.x;
-        preturn.y = (inputpoint.x - center.x)*Math.sin(-1*angle) + (inputpoint.y - center.y)*Math.cos(-1*angle)+center.y;
+        preturn.x = (inputpoint.x - center.x) * Math.cos(-1 * angle) - (inputpoint.y - center.y) * Math.sin(-1 * angle) + center.x;
+        preturn.y = (inputpoint.x - center.x) * Math.sin(-1 * angle) + (inputpoint.y - center.y) * Math.cos(-1 * angle) + center.y;
         return preturn;
-    }ESSE DEU CERTO!*/
+    }
 
-    //KARLA - double getOrientation(vector<Point> &pts, Point2f& pos){
-    /*private double getOrientation(MatOfPoint ptsMat, Mat img) {
+    private static double getOrientation(MatOfPoint ptsMat, Point center) {
         List<Point> pts = ptsMat.toList();
-        //Construct a buffer used by the pca analysis
-        /*KARLA -Mat data_pts = Mat(pts.size(), 2, CV_64FC1);
-        for (int i = 0; i < data_pts.rows; ++i){
-            data_pts.at<double>(i, 0) = pts[i].x;
-            data_pts.at<double>(i, 1) = pts[i].y;
-        }
-
-        Mat dataPts = new Mat(pts.size(), 2, CvType.CV_64FC1);
+        // Construct a buffer used by the pca analysis
+        int sz = pts.size();
+        Mat dataPts = new Mat(sz, 2, CvType.CV_64F);
         double[] dataPtsData = new double[(int) (dataPts.total() * dataPts.channels())];
         for (int i = 0; i < dataPts.rows(); i++) {
             dataPtsData[i * dataPts.cols()] = pts.get(i).x;
             dataPtsData[i * dataPts.cols() + 1] = pts.get(i).y;
         }
         dataPts.put(0, 0, dataPtsData);
-
-        //Perform PCA analysis
-        /*KARLA -PCA pca_analysis(data_pts, Mat(), PCA::DATA_AS_ROW);
-
-        //Store the position of the object
-        pos = Point2f(pca_analysis.mean.at<double>(0, 0),
-        pca_analysis.mean.at<double>(0, 1));
-
         // Perform PCA analysis
         Mat mean = new Mat();
         Mat eigenvectors = new Mat();
-        Mat eigenvalues = new Mat();
-        Core.PCAProject(dataPts, mean, eigenvectors, eigenvalues);
+        Core.PCACompute(dataPts, mean, eigenvectors);
         double[] meanData = new double[(int) (mean.total() * mean.channels())];
         mean.get(0, 0, meanData);
-
-        //Store the eigenvalues and eigenvectors
-        /*KARLA - vector<Point2d> e igen_vecs(2);
-        vector<double> eigen_val(2);
-        for (int i = 0; i < 2; ++i){
-            eigen_vecs[i] = Point2d(pca_analysis.eigenvectors.at<double>(i, 0),
-            pca_analysis.eigenvectors.at<double>(i, 1));
-            eigen_val[i] = pca_analysis.eigenvalues.at<double>(i,0);
-        }
-        return atan2(eigen_vecs[0].y, eigen_vecs[0].x);
-
-        // Store the eigenvalues and eigenvectors
+        // Store the center of the object
+        center.x = meanData[0];
+        center.y = meanData[1];
+        // Store eigenvectors
         double[] eigenvectorsData = new double[(int) (eigenvectors.total() * eigenvectors.channels())];
-        double[] eigenvaluesData = new double[(int) (eigenvalues.total() * eigenvalues.channels())];
         eigenvectors.get(0, 0, eigenvectorsData);
-        eigenvalues.get(0, 0, eigenvaluesData);
-        return  Math.atan2(eigenvectorsData[1], eigenvectorsData[0]);
-    }ESSE DEU CERTO*/
+        return Math.atan2(-eigenvectorsData[1], -eigenvectorsData[0]); // orientation in radians;
+    }
 
-    /*void pca(MatOfPoint contours, int i){
-        Mat contour_mat = contours;
-        //KARLA - Point2f* pos = new Point2f();
-        Mat pos = new Mat();
-        double dOrient =  getOrientation(contours, pos);
-        int xmin = 99999;
-        int xmax = 0;
-        int ymin = 99999;
-        int ymax = 0;
+    private static MatOfPoint pca(List<MatOfPoint> contours, int i) {
+        Point pos = new Point();
+        double dOrient = getOrientation(contours.get(i), pos);
+        ArrayList<Point> pointsOrdered = new ArrayList<>();
 
-        //KARLA - for (size_t j = 0;j<contours[i].size();j++){
-        for (int j = 0; j < contour_mat.; j++){
-            //KARLA - contours[i][j] = GetPointAfterRotate(contours[i][j],(Point)*pos,dOrient);
-            contours[i][j] = GetPointAfterRotate(contours.toArray()[i], pos[0].toArray()[0],dOrient);
-            if (contours.get(i).toArray()[j].x < xmin)
-                xmin = (int)contours.get(i).toArray()[j].x;
-            if (contours.get(i).toArray()[j].x > xmax)
-                xmax = (int)contours.get(i).toArray()[j].x;
-            if (contours.get(i).toArray()[j].y < ymin)
-                ymin = (int)contours.get(i).toArray()[j].y;
-            if (contours.get(i).toArray()[j].y > ymax)
-                ymax = (int)contours.get(i).toArray()[j].y;
+        for (int j = 0; j < contours.size(); j++) {
+            Point p = GetPointAfterRotate(contours.get(i).toList().get(j), pos, dOrient);
+            pointsOrdered.add(p);
         }
-    }*/
+        MatOfPoint contourPCA = new MatOfPoint();
+        contourPCA.fromList(pointsOrdered);
+        return contourPCA;
+    }
 
     protected Mat createBoundingBoxes(Mat src) {
-        double mediaAltura = 0,mediaLargura = 0,mediaArea = 0;
+        double mediaAltura = 0, mediaLargura = 0, mediaArea = 0;
 
         Mat cannyOutput = new Mat();
         Imgproc.threshold(src, cannyOutput, 111.56, 255, Imgproc.THRESH_OTSU);
@@ -406,9 +371,9 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
             } else if (area > areaLimitante && area < areaMaxima && rotatedRect[i].boundingRect().height * alturaQuadrado / altQuad > 1) {
                 Scalar color = new Scalar(255, 0, 0);
                 Imgproc.drawContours(ImageMat, contours, i, color, 3);
-                double x = rotatedRect[i].boundingRect().x +  0.5 * rotatedRect[i].boundingRect().width;
-                double y = rotatedRect[i].boundingRect().y +  0.5 * rotatedRect[i].boundingRect().height;
-                Imgproc.putText (ImageMat,cont + "",new Point(x, y),Core.FONT_HERSHEY_SIMPLEX ,5,new Scalar(255, 0, 0),
+                double x = rotatedRect[i].boundingRect().x + 0.5 * rotatedRect[i].boundingRect().width;
+                double y = rotatedRect[i].boundingRect().y + 0.5 * rotatedRect[i].boundingRect().height;
+                Imgproc.putText(ImageMat, cont + "", new Point(x, y), Core.FONT_HERSHEY_SIMPLEX, 5, new Scalar(255, 0, 0),
                         10
                 );
                 //Imgproc.rectangle(ImageMat, rotatedRect[i].tl(), rotatedRect[i].br(), color, 3);
@@ -433,7 +398,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 folha.setData(data_completa);
                 folha.setTipo(0);
                 folhaRepositorio.inserir(folha);
-                cont ++;
+                cont++;
                 mediaAltura += altura;
                 mediaLargura += largura;
                 mediaArea += areaFolhaCm;
@@ -443,15 +408,262 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         }
         Folha folhaMedia = new Folha();
         folhaMedia.setNome(data_completa + " - Nome do teste");
-        BigDecimal bdArea = new BigDecimal((mediaArea/cont)).setScale(4, RoundingMode.HALF_EVEN);
+        BigDecimal bdArea = new BigDecimal((mediaArea / cont)).setScale(4, RoundingMode.HALF_EVEN);
         folhaMedia.setArea(bdArea + "");
-        BigDecimal bdAltura = new BigDecimal((mediaAltura/cont)).setScale(4, RoundingMode.HALF_EVEN);
+        BigDecimal bdAltura = new BigDecimal((mediaAltura / cont)).setScale(4, RoundingMode.HALF_EVEN);
         folhaMedia.setAltura(bdAltura + "");
-        BigDecimal bdLargura = new BigDecimal((mediaLargura/cont)).setScale(4, RoundingMode.HALF_EVEN);
+        BigDecimal bdLargura = new BigDecimal((mediaLargura / cont)).setScale(4, RoundingMode.HALF_EVEN);
         folhaMedia.setLargura(bdLargura + "");
         folhaMedia.setData(data_completa);
         folhaMedia.setTipo(1);
         folhaRepositorio.inserir(folhaMedia);
         return ImageMat;
     }
+
+    static void findObjects(Mat image) {
+        Mat gray = new Mat();
+        Mat thresh = new Mat();
+        Mat hierarchy = new Mat();
+
+        List<MatOfPoint> contours = new ArrayList<>();
+
+        //MatOfPoint2f[] approx = new MatOfPoint2f[contours.size()];
+
+        Imgproc.cvtColor(image, gray, COLOR_BGR2GRAY);
+
+        Imgproc.threshold(gray, thresh, 0, 255, Imgproc.THRESH_BINARY_INV | Imgproc.THRESH_OTSU);
+
+        Imgproc.findContours(thresh, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        //Imgproc.findContours(thresh, contours, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        MatOfPoint2f[] approx = new MatOfPoint2f[contours.size()];
+        for (int i = 0; i < contours.size(); i++) {
+            Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), approx[i], Imgproc.arcLength(new MatOfPoint2f(contours.get(i).toArray()), true) * 0.02, true);
+            //approxPolyDP(contours[i], approx, arcLength(contours[i], true)*0.02, true);
+            //if(approx.size() == 4 && fabs(contourArea(approx)) > 10000 && fabs(contourArea(approx)) < 999999999 && isContourConvex(approx) ){ NÃO CONSEGUI COLOCAR O isContourConvex
+            if (approx[i].toArray().length == 4 && Math.abs(Imgproc.contourArea(approx[i])) > 10000 && Math.abs(Imgproc.contourArea(approx[i])) < 999999999) {
+                double maxCosine = 0;
+
+                for (int j = 2; j < 5; j++) {
+                    double cosine = Math.abs(angle(approx[i].toArray()[j % 4], approx[i].toArray()[j - 2], approx[i].toArray()[j - 1]));
+                    maxCosine = Math.max(maxCosine, cosine);
+                }
+
+                if (maxCosine < 0.3) {
+                    square.add(approx[i]);
+                } else {
+                    leaves.add(contours.get(i));
+                    pca(contours, i);
+                    leavesPCA.add(contours.get(i));
+                }
+            } else if (Math.abs(Imgproc.contourArea(approx[i])) > 1000 && Math.abs(Imgproc.contourArea(approx[i])) < 999999999) {
+                leaves.add(contours.get(i));
+                pca(contours, i);
+                leavesPCA.add(contours.get(i));
+            }
+        }
+    }
+
+    static void surfaceCalc(Mat image) {
+        List<MatOfPoint> result = new ArrayList<>();
+        /*QString result = "";
+        result.clear();
+        auxExport.clear();
+        auxExport2.clear();*/
+
+        //---------------------Variaveis auxiliares calculos-----------------------
+
+        double largSquare = 0, compSquare = 0, sum = 0.0;
+        double mL = 0.0, mC = 0.0, mA = 0.0, mP = 0.0;
+        double dL = 0.0, dC = 0.0, dA = 0.0, dP = 0.0;
+        double L[] = new double[leaves.size()];
+        double C[] = new double[leaves.size()];
+        double A[] = new double[leaves.size()];
+        double P[] = new double[leaves.size()];
+        double LC[] = new double[leaves.size()];
+
+        //-------------------SQUARE----------------------
+
+        if (wid || len) {
+            largSquare = Math.sqrt((Math.pow((square.get(0).toArray()[2].x - square.get(0).toArray()[1].x), 2) + Math.pow((square.get(0).toArray()[2].y - square.get(0).toArray()[1].y), 2)));
+            compSquare = Math.sqrt((Math.pow((square.get(0).toArray()[1].x - square.get(0).toArray()[0].x), 2) + Math.pow((square.get(0).toArray()[1].y - square.get(0).toArray()[0].y), 2)));
+        }
+        double contourSquare = Imgproc.contourArea(square.get(0));
+        double perSquare = Math.sqrt(areaQuadrado) * 4;
+
+        //final Point p = square.get(0).toArray()[0];
+        //int n = square.get(0).toArray().length;
+        Scalar color = new Scalar(0, 255, 0);
+        Imgproc.polylines(image, result, true, color, 1, 10, Imgproc.LINE_AA);
+
+        //---------------------LEAFS-----------------------
+
+        Rect[] boundRect = new Rect[leavesPCA.size()];
+        Vector<Vector<Point>> vec_tor = new Vector<Vector<Point>>();
+        for (int i = 0; i < leavesPCA.size(); i++) {
+            final Point p = leaves.get(i).toArray()[0];
+            int n = leaves.get(i).toArray().length;
+            Scalar color2 = new Scalar(0, 0, 255);
+            Imgproc.polylines(image, result, true, color2, 1, 10, Imgproc.LINE_AA);
+            Scalar color3 = new Scalar(255, 0, 0);
+            //leaves[i].at(leaves[i].capacity()/2);
+            double x = boundRect[i].x + 0.5 * boundRect[i].width;
+            double y = boundRect[i].y + 0.5 * boundRect[i].height;
+            Imgproc.putText(image, (i + 1) + "", new Point(x, y), Core.FONT_HERSHEY_SIMPLEX, 5, color3,
+                    12
+            );
+            //result.append("\nLeaf: ");
+            //result.append(QString::number (i + 1));
+            //result.append("\n\n");*/
+
+            //_____________Calculo Largura e Comprimento_____________
+
+            if (wid || len) {
+                boundRect[i] = Imgproc.boundingRect(leavesPCA.get(i));
+
+                double aux = Math.sqrt((Math.pow((boundRect[i].tl().x - boundRect[i].tl().x), 2) + Math.pow((boundRect[i].br().y - boundRect[i].tl().y), 2)));
+                aux = (aux * Math.sqrt((areaQuadrado))) / largSquare;
+
+                double aux2 = Math.sqrt((Math.pow((boundRect[i].tl().x - boundRect[i].br().x), 2) + Math.pow((boundRect[i].tl().y - boundRect[i].tl().y), 2)));
+                aux2 = (aux2 * Math.sqrt((areaQuadrado))) / compSquare;
+
+                if (aux2 > aux) {
+                    if (avedev && wid) mL += aux;
+                    if (avedev && len) mC += aux2;
+                    if (wid) {
+                        //result.append("\nWidth: "); result.append(QString::number(aux));
+                        L[i] = aux;
+                    }
+                    if (len) {
+                        //result.append("\nLength: "); result.append(QString::number(aux2));
+                        C[i] = aux2;
+                    }
+
+                    if (widlen) {
+                        //result.append("\nWidth/Length: "); result.append(QString::number(aux/aux2));
+                        LC[i] = aux / aux2;
+                    }
+
+                } else {
+
+                    if (avedev && wid) mL += aux2;
+                    if (avedev && len) mC += aux;
+                    if (wid) {
+                        //result.append("\nWidth: "); result.append(QString::number(aux2));
+                        L[i] = aux2;
+                    }
+                    if (len) {
+                        //result.append("\nLength: "); result.append(QString::number(aux));
+                        C[i] = aux;
+                    }
+                    if (widlen) {
+                        //result.append("\nWidth/Length: "); result.append(QString::number(aux2/aux));
+                        LC[i] = aux2 / aux;
+                    }
+                }
+            }
+
+            //_____________Calculo Area_____________
+
+            if (area) {
+                double auxArea = ((Imgproc.contourArea(leavesPCA.get(i)) * areaQuadrado) / contourSquare);
+
+                if (sumareas) sum += auxArea;
+
+                //result.append("\nArea: "); result.append(QString::number(auxArea));
+
+                if (avedev && area) mA += auxArea;
+
+                A[i] = auxArea;
+            }
+
+            //_____________Calculo Perimetro_____________
+
+
+            if (per) {
+                double auxPer = ((Imgproc.arcLength(new MatOfPoint2f(leavesPCA.get(i).toArray()), true) * perSquare) / Imgproc.arcLength(new MatOfPoint2f(square.get(0)), true));
+
+                //result.append("\nPerimeter: "); result.append(QString::number(auxPer));
+
+                if (avedev && per) mP += auxPer;
+
+                P[i] = auxPer;
+            }
+
+            //result.append("\n\n");
+
+
+            //_____________Result sum areas_____________
+
+            if (sumareas) {
+                //result.append("\nSum areas: "); result.append(QString::number(sum));
+                //result.append("\n\n");
+            }
+
+            //_____________Calculo Media e Desvio_____________
+
+            if (avedev) {
+                //_____________Media_____________
+
+                if (avedev && wid) {
+                    mL = mL / leavesPCA.size();
+                    //result.append("\nAverage width: "); result.append(QString::number(mL));
+                }
+
+                if (avedev && len) {
+                    mC = mC / leavesPCA.size();
+                    //result.append("\nAverage lenght: "); result.append(QString::number(mC));
+                }
+
+                if (avedev && area) {
+                    mA = mA / leavesPCA.size();
+                    //result.append("\nAverage area: "); result.append(QString::number(mA));
+                }
+
+                if (avedev && per) {
+                    mP = mP / leavesPCA.size();
+                    //result.append("\nAverage perimeter: "); result.append(QString::number(mP));
+                }
+
+                //result.append("\n\n");
+
+                //_____________Desvio_____________
+
+                if (avedev && wid) {
+                    for (int j = 0; j < leavesPCA.size(); j++) {
+                        dL += Math.pow(L[i] - mL, 2);
+                    }
+                    dL = Math.sqrt(dL / leavesPCA.size());
+                    //result.append("\nWidth deviation: "); result.append(QString::number(dL));
+                }
+
+                if (avedev && len) {
+                    for (int k = 0; k < leavesPCA.size(); k++) {
+                        dC += Math.pow(C[i] - mC, 2);
+                    }
+                    dC = Math.sqrt(dC / leavesPCA.size());
+                    //result.append("\nLenght deviation: "); result.append(QString::number(dC));
+                }
+
+                if (avedev && area) {
+                    for (int l = 0; l < leavesPCA.size(); l++) {
+                        dA += Math.pow(A[i] - mA, 2);
+                    }
+                    dA = Math.sqrt(dA / leavesPCA.size());
+                    //result.append("\nArea deviation: "); result.append(QString::number(dA));
+                }
+
+                if (avedev && per) {
+                    for (int k = 0; k < leavesPCA.size(); k++) {
+                        dP += Math.pow(P[i] - mP, 2);
+                    }
+                    dP = Math.sqrt(dP / leavesPCA.size());
+                    //result.append("\nPerimeter deviation: "); result.append(QString::number(dP));
+                }
+
+                //result.append("\n\n");
+            }
+        }
+    }
 }
+
