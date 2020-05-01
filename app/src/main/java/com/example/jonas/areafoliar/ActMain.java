@@ -566,6 +566,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
             //_____________Calculo Perimetro_____________
             double auxPer = ((Imgproc.arcLength(new MatOfPoint2f(leavesPCA.get(i).toArray()), true) * perSquare) / Imgproc.arcLength(new MatOfPoint2f(square.get(0)), true));
             //result.append("\nPerimeter: "); result.append(QString::number(auxPer));
+            folha.setPerimetro(auxPer + "");
             mP += auxPer;
             P[i] = auxPer;
             //result.append("\n\n");
@@ -615,6 +616,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         folhaMedia.setAltura(mC + "");
         folhaMedia.setLargura(mL + "");
         folhaMedia.setData(data_completa);
+        folhaMedia.setPerimetro(mP + "");
         folhaMedia.setTipo(1);
         folhaRepositorio.inserir(folhaMedia);
     }

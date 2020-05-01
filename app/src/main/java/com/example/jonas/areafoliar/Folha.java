@@ -6,19 +6,20 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 public class Folha implements Serializable, Parcelable {
-    private String nome,area,altura,largura,data;
-    private int codigo,tipo;
+    private String nome, area, altura, largura, data, perimetro;
+    private int codigo, tipo;
 
-    public Folha(String nome, String area, String altura, String largura, String data, int tipo) {
+    public Folha(String nome, String area, String altura, String largura, String data, int tipo, String perimetro) {
         this.nome = nome;
         this.area = area;
         this.altura = altura;
         this.largura = largura;
         this.data = data;
         this.tipo = tipo;
+        this.perimetro = perimetro;
     }
 
-    public Folha(){
+    public Folha() {
         this.codigo = 0;
     }
 
@@ -29,6 +30,7 @@ public class Folha implements Serializable, Parcelable {
         largura = in.readString();
         data = in.readString();
         codigo = in.readInt();
+        perimetro = in.readString();
     }
 
     public static final Creator<Folha> CREATOR = new Creator<Folha>() {
@@ -97,6 +99,14 @@ public class Folha implements Serializable, Parcelable {
 
     public void setTipo(int tipo) {
         this.tipo = tipo;
+    }
+
+    public String getPerimetro() {
+        return perimetro;
+    }
+
+    public void setPerimetro(String perimetro) {
+        this.perimetro = perimetro;
     }
 
     @Override

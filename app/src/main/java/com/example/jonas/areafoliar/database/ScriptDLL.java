@@ -10,7 +10,8 @@ public class ScriptDLL {
         sql.append("  ALTURA    VARCHAR (200) NOT NULL DEFAULT (''),");
         sql.append("  LARGURA VARCHAR (200)  NOT NULL DEFAULT (''),");
         sql.append("  DATA VARCHAR (200) NOT NULL DEFAULT (''),");
-        sql.append("  TIPO INTEGER NOT NULL)");
+        sql.append("  TIPO INTEGER NOT NULL),");
+        sql.append("  PERIMETRO VARCHAR (200) NOT NULL DEFAULT (''))");
         return sql.toString();
     }
 }

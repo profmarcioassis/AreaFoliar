@@ -42,6 +42,7 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
             viewHolder.edtArea.setText(folha.getArea());
             viewHolder.edtAltura.setText(folha.getAltura());
             viewHolder.edtLargura.setText(folha.getLargura());
+            viewHolder.edtPerimetro.setText(folha.getPerimetro());
         }
     }
 
@@ -51,7 +52,7 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
     }
 
     class ViewHolderFolhas extends RecyclerView.ViewHolder {
-        private EditText edtNome, edtArea, edtAltura, edtLargura;
+        private EditText edtNome, edtArea, edtAltura, edtLargura,edtPerimetro;
         private FolhasRepositorio folhasRepositorio;
         private SQLiteDatabase conexao;
         private Context contextoApp;
@@ -63,6 +64,7 @@ public class FolhasAdapter extends RecyclerView.Adapter<FolhasAdapter.ViewHolder
             edtArea = itemView.findViewById(R.id.edtArea);
             edtAltura = itemView.findViewById(R.id.edtAltura);
             edtLargura = itemView.findViewById(R.id.edtLargura);
+            edtPerimetro = itemView.findViewById(R.id.edtPerimetro);
             contextoApp = context;
             criarConexao();
             folhasRepositorio = new FolhasRepositorio(conexao);

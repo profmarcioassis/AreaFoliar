@@ -26,6 +26,7 @@ public class FolhasRepositorio {
         contentValues.put("LARGURA",folha.getLargura());
         contentValues.put("DATA",folha.getData());
         contentValues.put("TIPO",folha.getTipo());
+        contentValues.put("PERIMETRO",folha.getPerimetro());
         conexao.insertOrThrow("FOLHA",null,contentValues);
     }
 
@@ -59,6 +60,7 @@ public class FolhasRepositorio {
                 folha.setLargura(resultado.getString(resultado.getColumnIndexOrThrow("LARGURA")));
                 folha.setData(resultado.getString(resultado.getColumnIndexOrThrow("DATA")));
                 folha.setTipo(resultado.getInt(resultado.getColumnIndexOrThrow("TIPO")));
+                folha.setPerimetro(resultado.getString(resultado.getColumnIndexOrThrow("PERIMETRO")));
                 folhas.add(folha);
             }while(resultado.moveToNext());
         }

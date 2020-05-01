@@ -80,6 +80,9 @@
     <string name="cm4_config_geral">4 cm</string>
     <string name="cm5_config_geral">5 cm</string>
     <string name="test_name_act_config_dados">Test Name</string>
+    <string name="perimeter_linha_config_dados">Perimeter:</string>
+    <string name="perimeter_value_linha_config_dados">Perimeter value</string>
+    <string name="txtPerimetroDados">Average Perimeter:</string>
 
 
 </resources>
