@@ -21,10 +21,10 @@ public class DadosOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
+        if (oldVersion == 1) {
             db.execSQL(DATABASE_ALTER_FOLHA_1);
             db.execSQL(DATABASE_ALTER_FOLHA_2);
-        }else if(oldVersion < 3){
+        }else if(oldVersion == 2){
             db.execSQL(DATABASE_ALTER_FOLHA_2);
         }
     }

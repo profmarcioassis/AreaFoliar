@@ -46,7 +46,7 @@ public class FolhasRepositorio {
 
     public List<Folha> consultar(){
         List<Folha> folhas = new ArrayList<>();
-        String sql = "SELECT CODIGO,NOME,AREA,ALTURA,LARGURA,DATA,TIPO " +
+        String sql = "SELECT CODIGO,NOME,AREA,ALTURA,LARGURA,DATA,TIPO,PERIMETRO " +
                 "FROM FOLHA";
         @SuppressLint("Recycle") Cursor resultado = conexao.rawQuery(sql,null);
         if (resultado.getCount() > 0){

@@ -53,7 +53,7 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
     private static final String TAG = "MYAPP::OPENCV";
     private CameraBridgeViewBase mOpenCvCameraView;
     private double altQuad, largQuad;
-    private Mat ImageMat;
+    private static Mat ImageMat;
     public static Bitmap bitmap;
     int total = 0;
     double altura = 0,largura = 0,areaQuadradoPx = 0,areaFolhaCm = 0;
@@ -139,9 +139,16 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
                 //Salva a imagem
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                Intent it = new Intent(this, ActCamera.class);
-                startActivity(it);
-
+                if (square.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "The square could not be found. Try again", Toast.LENGTH_LONG).show();
+                } else if (leaves.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "The leaves could not be found. Try again", Toast.LENGTH_LONG).show();
+                } else {
+                    //Abre a tela para mostrar o resultado
+                    Intent it = new Intent(this, ActCamera.class);
+                    //Inicia a intent
+                    startActivity(it);
+                }
                 break;
 
             case R.id.gallery:
@@ -346,15 +353,18 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
 
                 if (maxCosine < 0.3) {
                     square.add(approx[i]);
+                    Imgproc.drawContours(ImageMat, contours, i, new Scalar(0, 255, 0), 3);
                 } else {
                     leaves.add(contours.get(i));
                     pca(contours, i);
                     leavesPCA.add(contours.get(i));
+                    Imgproc.drawContours(ImageMat, contours, i, new Scalar(255, 0, 0), 3);
                 }
             } else if (Math.abs(Imgproc.contourArea(approx[i])) > 1000 && Math.abs(Imgproc.contourArea(approx[i])) < 999999999) {
                 leaves.add(contours.get(i));
                 pca(contours, i);
                 leavesPCA.add(contours.get(i));
+                Imgproc.drawContours(ImageMat, contours, i, new Scalar(255, 0, 0), 3);
             }
         }
     }

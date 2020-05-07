@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder;
 
 class FolhaViewHolder extends ChildViewHolder {
-    private TextView txtNome,txtArea,txtAltura,txtLargura;
+    private TextView txtNome,txtArea,txtAltura,txtLargura,txtPerimetro;
     private Folha folha;
 
     FolhaViewHolder(View itemView, final Context context) {
@@ -17,6 +17,7 @@ class FolhaViewHolder extends ChildViewHolder {
         txtArea = itemView.findViewById(R.id.lblArea);
         txtAltura = itemView.findViewById(R.id.lblAltura);
         txtLargura = itemView.findViewById(R.id.lblLargura);
+        txtPerimetro = itemView.findViewById(R.id.lblPerimetro);
         itemView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -35,6 +36,7 @@ class FolhaViewHolder extends ChildViewHolder {
         txtArea.setText(folha.getArea());
         txtAltura.setText(folha.getAltura());
         txtLargura.setText(folha.getLargura());
+        txtPerimetro.setText(folha.getPerimetro());
     }
 
 }

@@ -60,7 +60,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
 
     private static final int TELA_CAMERA = 1;
     private double altQuad, largQuad;
-    private Mat ImageMat;
+    private static Mat ImageMat;
     public static Bitmap bitmap;
     int total = 0;
     double altura = 0, largura = 0, areaQuadradoPx = 0, areaFolhaCm = 0;
@@ -208,10 +208,16 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 //Converte o bitmap para JPEG
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                //Abre a tela para mostrar o resultado
-                Intent it = new Intent(this, ActCamera.class);
-                //Inicia a intent
-                startActivity(it);
+                if (square.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "The square could not be found. Try again", Toast.LENGTH_LONG).show();
+                } else if (leaves.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "The leaves could not be found. Try again", Toast.LENGTH_LONG).show();
+                } else {
+                    //Abre a tela para mostrar o resultado
+                    Intent it = new Intent(this, ActCamera.class);
+                    //Inicia a intent
+                    startActivity(it);
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -424,7 +430,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     }
 
     static void findObjects(Mat image) {
-       // Mat gray = new Mat();
+        // Mat gray = new Mat();
         Mat thresh = new Mat();
         Mat hierarchy = new Mat();
 
@@ -456,15 +462,18 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
 
                 if (maxCosine < 0.3) {
                     square.add(approx[i]);
+                    Imgproc.drawContours(ImageMat, contours, i, new Scalar(0, 255, 0), 3);
                 } else {
                     leaves.add(contours.get(i));
                     pca(contours, i);
                     leavesPCA.add(contours.get(i));
+                    Imgproc.drawContours(ImageMat, contours, i, new Scalar(255, 0, 0), 3);
                 }
             } else if (Math.abs(Imgproc.contourArea(approx[i])) > 1000 && Math.abs(Imgproc.contourArea(approx[i])) < 999999999) {
                 leaves.add(contours.get(i));
                 pca(contours, i);
                 leavesPCA.add(contours.get(i));
+                Imgproc.drawContours(ImageMat, contours, i, new Scalar(255, 0, 0), 3);
             }
         }
     }
