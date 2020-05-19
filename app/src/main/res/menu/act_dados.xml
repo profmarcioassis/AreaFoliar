@@ -5,6 +5,12 @@
         android:id="@+id/action_dados"
         android:orderInCategory="100"
         android:icon="@drawable/ic_informacao_act_main"
-        android:title="Detalhes"
+        android:title="Info"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_home"
+        android:orderInCategory="200"
+        android:icon="@drawable/ic_home_menu_24dp"
+        android:title="Home"
         app:showAsAction="ifRoom" />
 </menu>

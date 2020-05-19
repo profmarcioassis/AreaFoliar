@@ -40,32 +40,26 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
-import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
-
-
 public class ActMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static final int TELA_CAMERA = 1;
-    private double altQuad, largQuad;
+    //private double altQuad, largQuad;
     private static Mat ImageMat;
     public static Bitmap bitmap;
-    int total = 0;
-    double altura = 0, largura = 0, areaQuadradoPx = 0, areaFolhaCm = 0;
+    //int total = 0;
+    //double altura = 0, largura = 0, areaQuadradoPx = 0, areaFolhaCm = 0;
     private FolhasRepositorio folhaRepositorio;
-    private int cont = 1;
+    //private int cont = 1;
     private String data_completa;
     private static List<MatOfPoint2f> square = new ArrayList<>();
     private static List<MatOfPoint> leaves = new ArrayList<>();
@@ -100,7 +94,6 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         criarConexao();
     }
 
@@ -181,6 +174,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 c.moveToFirst();
                 int columIndex = c.getColumnIndex(colunaArquivo[0]);
                 String picPath = c.getString(columIndex);
+                bitmap = null;
                 bitmap = BitmapFactory.decodeFile(picPath);
 
                 ImageMat = new Mat();
@@ -201,13 +195,14 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 Date data_atual = cal.getTime();
                 data_completa = dateFormat.format(data_atual);
                 findObjects(result);
-                surfaceCalc(result);
+                surfaceCalc();
                 //Converte o Mat em bitmap para salvar na tela
                 Utils.matToBitmap(ImageMat, bitmap);
                 //Cria objeto de ByteArray
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 //Converte o bitmap para JPEG
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                stream.reset();
                 if (square.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "The square could not be found. Try again", Toast.LENGTH_LONG).show();
                 } else if (leaves.isEmpty()) {
@@ -217,6 +212,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                     Intent it = new Intent(this, ActCamera.class);
                     //Inicia a intent
                     startActivity(it);
+                    finish();
                 }
             }
         }
@@ -267,112 +263,17 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         }
     }
 
-    protected Mat createBoundingBoxes(Mat src) {
-        double mediaAltura = 0, mediaLargura = 0, mediaArea = 0;
+    @Override
+    protected void onResume() {
 
-        Mat cannyOutput = new Mat();
-        Imgproc.threshold(src, cannyOutput, 111.56, 255, Imgproc.THRESH_OTSU);
-        List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
-        Imgproc.findContours(cannyOutput, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        MatOfPoint2f[] contoursPoly = new MatOfPoint2f[contours.size()];
-        RotatedRect[] rotatedRect = new RotatedRect[contours.size()];
-        Point[] centers = new Point[contours.size()];
-        float[][] radius = new float[contours.size()][1];
-        for (int i = 0; i < contours.size(); i++) {
-            contoursPoly[i] = new MatOfPoint2f();
-            Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], Imgproc.arcLength(new MatOfPoint2f(contours.get(i).toArray()), true) * 0.02, true);
-            rotatedRect[i] = Imgproc.minAreaRect(contoursPoly[i]);
-            centers[i] = new Point();
-            Imgproc.minEnclosingCircle(contoursPoly[i], centers[i], radius[i]);
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            //Toast.makeText(getApplicationContext(), "Fechar tudo", Toast.LENGTH_LONG).show();
+            //finish();
         }
-        //Mat drawing = Mat.zeros(src.size(), CvType.CV_8UC3);
-        List<MatOfPoint> contoursPolyList = new ArrayList<>(contoursPoly.length);
 
-        for (MatOfPoint2f poly : contoursPoly) {
-            contoursPolyList.add(new MatOfPoint(poly.toArray()));
-        }
-        int areaLimitante = 10000;
-        int areaMaxima = 8000000;
-        int areaQuadradoCm;
-        int alturaQuadrado;
-
-        //sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE);
-        //String result = sharedPreferences.getString(getString(R.string.pref_text), "");
-        //alturaQuadrado = Integer.parseInt(result);
-        SharedPreferences sharedPreferences = getSharedPreferences("valorLadoPref", Context.MODE_PRIVATE);
-        alturaQuadrado = sharedPreferences.getInt("lado", 5);
-        areaQuadradoCm = alturaQuadrado * alturaQuadrado;
-
-        for (int i = 0; i < contours.size(); i++) {
-            double area = Imgproc.contourArea(contoursPolyList.get(i));
-            if (contoursPolyList.get(i).toArray().length == 4 && area > areaLimitante && area < areaMaxima) {
-                double maxCosine = 0;
-                total = contoursPolyList.get(i).toArray().length;
-                Point bl = new Point(rotatedRect[i].boundingRect().tl().x, rotatedRect[i].boundingRect().br().y);
-                double cosine = angle(rotatedRect[i].boundingRect().tl(), rotatedRect[i].boundingRect().br(), bl);
-                maxCosine = Math.max(maxCosine, cosine);
-                if (maxCosine < 0.3) {
-                    Scalar color = new Scalar(0, 255, 0);
-                    Imgproc.drawContours(ImageMat, contours, i, color, 3);
-                    //Imgproc.rectangle(ImageMat, rotatedRect[i].tl(), rotatedRect[i].br(), color, 3);
-                    //Imgproc.circle(drawing, centers[i], (int) radius[i][0], color, 3);
-                    //areaQuadradoPx = Core.countNonZero(src.submat(rotatedRect[i]));
-                    areaQuadradoPx = Imgproc.contourArea(contours.get(i));
-                    altQuad = rotatedRect[i].boundingRect().height;
-                    largQuad = rotatedRect[i].boundingRect().width;
-                }
-            } else if (area > areaLimitante && area < areaMaxima && rotatedRect[i].boundingRect().height * alturaQuadrado / altQuad > 1) {
-                Scalar color = new Scalar(255, 0, 0);
-                Imgproc.drawContours(ImageMat, contours, i, color, 3);
-                double x = rotatedRect[i].boundingRect().x + 0.5 * rotatedRect[i].boundingRect().width;
-                double y = rotatedRect[i].boundingRect().y + 0.5 * rotatedRect[i].boundingRect().height;
-                Imgproc.putText(ImageMat, cont + "", new Point(x, y), Core.FONT_HERSHEY_SIMPLEX, 5, new Scalar(255, 0, 0),
-                        10
-                );
-                //Imgproc.rectangle(ImageMat, rotatedRect[i].tl(), rotatedRect[i].br(), color, 3);
-                //Imgproc.circle(drawing, centers[i], (int) radius[i][0], color, 3);
-                //result = src.submat(rotatedRect[i]);
-                //areaFolhaCm = Core.countNonZero(result) * areaQuadradoCm / areaQuadradoPx;
-                //areaFolhaCm = (Imgproc.contourArea(contours.get(i)) * areaQuadradoCm) / areaQuadradoPx;
-                areaFolhaCm = ((Imgproc.contourArea(contours.get(i)) * areaQuadradoCm) / areaQuadradoPx);
-                altura = rotatedRect[i].boundingRect().height * alturaQuadrado / altQuad;
-                largura = rotatedRect[i].boundingRect().width * alturaQuadrado / largQuad;
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-                Date data = new Date();
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(data);
-                Date data_atual = cal.getTime();
-                data_completa = dateFormat.format(data_atual);
-                Folha folha = new Folha();
-                folha.setNome(data_completa + " " + cont);
-                folha.setArea(areaFolhaCm + "");
-                folha.setAltura(altura + "");
-                folha.setLargura(largura + "");
-                folha.setData(data_completa);
-                folha.setTipo(0);
-                folhaRepositorio.inserir(folha);
-                cont++;
-                mediaAltura += altura;
-                mediaLargura += largura;
-                mediaArea += areaFolhaCm;
-                //Folha folha = new Folha("Folha " + (folhas.size() + 1), areaFolhaCm + "", altura + "", largura + "");
-                //folhas.add(folha);
-            }
-        }
-        Folha folhaMedia = new Folha();
-        folhaMedia.setNome(data_completa + " - Nome do teste");
-        BigDecimal bdArea = new BigDecimal((mediaArea / cont)).setScale(4, RoundingMode.HALF_EVEN);
-        folhaMedia.setArea(bdArea + "");
-        BigDecimal bdAltura = new BigDecimal((mediaAltura / cont)).setScale(4, RoundingMode.HALF_EVEN);
-        folhaMedia.setAltura(bdAltura + "");
-        BigDecimal bdLargura = new BigDecimal((mediaLargura / cont)).setScale(4, RoundingMode.HALF_EVEN);
-        folhaMedia.setLargura(bdLargura + "");
-        folhaMedia.setData(data_completa);
-        folhaMedia.setTipo(1);
-        folhaRepositorio.inserir(folhaMedia);
-        return ImageMat;
+        super.onResume();
     }
+
 
     static double angle(Point pt1, Point pt2, Point pt0) {
         double dx1 = pt1.x - pt0.x;
@@ -417,10 +318,11 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
 
     private static MatOfPoint pca(List<MatOfPoint> contours, int i) {
         Point pos = new Point();
-        double dOrient = getOrientation(contours.get(i), pos);
+        double dOrient;
+        dOrient = getOrientation(contours.get(i), pos);
         ArrayList<Point> pointsOrdered = new ArrayList<>();
 
-        for (int j = 0; j < contours.size(); j++) {
+        for (int j = 0; j < contours.get(i).toList().size(); j++) {
             Point p = GetPointAfterRotate(contours.get(i).toList().get(j), pos, dOrient);
             pointsOrdered.add(p);
         }
@@ -465,34 +367,37 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                     Imgproc.drawContours(ImageMat, contours, i, new Scalar(0, 255, 0), 3);
                 } else {
                     leaves.add(contours.get(i));
-                    pca(contours, i);
-                    leavesPCA.add(contours.get(i));
+                    MatOfPoint contourPCA = pca(contours, i);
+                    leavesPCA.add(contourPCA);
+                    List<Point> pts = contourPCA.toList();
                     Imgproc.drawContours(ImageMat, contours, i, new Scalar(255, 0, 0), 3);
                 }
             } else if (Math.abs(Imgproc.contourArea(approx[i])) > 1000 && Math.abs(Imgproc.contourArea(approx[i])) < 999999999) {
                 leaves.add(contours.get(i));
-                pca(contours, i);
-                leavesPCA.add(contours.get(i));
+                MatOfPoint contourPCA =  pca(contours, i);
+                leavesPCA.add(contourPCA);
+                List<Point> pts = contourPCA.toList();
                 Imgproc.drawContours(ImageMat, contours, i, new Scalar(255, 0, 0), 3);
             }
         }
     }
 
-    void surfaceCalc(Mat image) {
+    void surfaceCalc() {
         List<MatOfPoint> result = new ArrayList<>();
         SharedPreferences sharedPreferences = getSharedPreferences("valorLadoPref", Context.MODE_PRIVATE);
         float areaQuadrado = sharedPreferences.getInt("lado", 5) * sharedPreferences.getInt("lado", 5);
 
         //---------------------Variaveis auxiliares calculos-----------------------
 
-        double largSquare = 0, compSquare = 0, sum = 0.0;
+        double largSquare, compSquare;
+        //double sum = 0.0;
         double mL = 0.0, mC = 0.0, mA = 0.0, mP = 0.0;
         double dL = 0.0, dC = 0.0, dA = 0.0, dP = 0.0;
         double[] L = new double[leaves.size()];
         double[] C = new double[leaves.size()];
         double[] A = new double[leaves.size()];
         double[] P = new double[leaves.size()];
-        double[] LC = new double[leaves.size()];
+        //double[] LC = new double[leaves.size()];
 
         //-------------------SQUARE----------------------
 
@@ -552,7 +457,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 folha.setAltura(aux2 + "");
                 C[i] = aux2;
                 //result.append("\nWidth/Length: "); result.append(QString::number(aux/aux2));
-                LC[i] = aux / aux2;
+                //LC[i] = aux / aux2;
             } else {
                 mL += aux2;
                 mC += aux;
@@ -563,12 +468,12 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 C[i] = aux;
                 folha.setAltura(aux + "");
                 //result.append("\nWidth/Length: "); result.append(QString::number(aux2/aux));
-                LC[i] = aux2 / aux;
+                //LC[i] = aux2 / aux;
             }
             //_____________Calculo Area_____________
             double auxArea = ((Imgproc.contourArea(leavesPCA.get(i)) * areaQuadrado) / contourSquare);
             folha.setArea(auxArea + "");
-            sum += auxArea;
+            //sum += auxArea;
             //result.append("\nArea: "); result.append(QString::number(auxArea));
             mA += auxArea;
             A[i] = auxArea;

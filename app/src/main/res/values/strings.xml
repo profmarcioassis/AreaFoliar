@@ -6,9 +6,9 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_act_camera">Câmera</string>
-    <string name="title_activity_act_config_dados">Alterar Dados</string>
-    <string name="title_activity_act_config_geral">ActConfigGeral</string>
+    <string name="title_activity_act_camera">Camera</string>
+    <string name="title_activity_act_config_dados">Change Data</string>
+    <string name="title_activity_act_config_geral">Settings</string>
     <!--<string name="cameraMain">Câmera</string>-->
     <string name="cameraMain">Camera</string>
     <!--<string name="desc_cameraMain">Tire uma foto para que ela seja analizada</string>-->

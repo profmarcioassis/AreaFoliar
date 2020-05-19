@@ -17,11 +17,12 @@ import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class ActCamera extends AppCompatActivity implements View.OnClickListener{
 
     ImageView imageViewFoto;
-
+    public static Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,22 +37,29 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
         //Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        Bitmap foto;
-        if(ActCameraCv.bitmap == null){
-            foto = ActMain.bitmap;
-        }else{
+        Bitmap foto = null;
+        if(ActCameraCv.bitmap != null){
             foto = ActCameraCv.bitmap;
-        }
-
+        }else if(ActMain.bitmap != null){
+            foto = ActMain.bitmap;
+        }/*else{
+            foto = ActDados.bitmap;
+        }*/
+        bitmap = foto;
         Bitmap rotated = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
         imageViewFoto.setImageBitmap(rotated);
 
     }
 
+    @Override
+    protected void onDestroy() {
+        //imageViewFoto.setImageDrawable(null);
+        super.onDestroy();
+    }
 
     @Override
     public void onBackPressed() {
-        Intent it2 = new Intent(this, ActCameraCv.class);
+        Intent it2 = new Intent(this, ActDados.class);
         startActivity(it2);
     }
 
@@ -70,9 +78,11 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
 
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     ActCameraCv.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
+                    stream.close();
                 } catch (FileNotFoundException e) {
                     // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 break;

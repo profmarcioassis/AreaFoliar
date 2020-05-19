@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.example.jonas.areafoliar.database.DadosOpenHelper;
 import com.example.jonas.areafoliar.repositorio.FolhasRepositorio;
 
+import org.opencv.core.Mat;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -122,17 +124,17 @@ public class ActDados extends AppCompatActivity{
             }
         }
         ArrayList<Historico> historicos = new ArrayList<>();
-        //Historico antigos = new Historico("Mais antigo",calculaMedia(maisAntigo));
-        Historico antigos = new Historico("Older",calculaMedia(maisAntigo));
-        historicos.add(antigos);
-        //Historico passado = new Historico("Mês passado",calculaMedia(mesPassado));
-        Historico passado = new Historico("Last month",calculaMedia(mesPassado));
-        historicos.add(passado);
-        Historico presente = new Historico(nomeMesAtual,calculaMedia(mesPresente));
-        historicos.add(presente);
         //Historico recente = new Historico("Hoje",calculaMedia(maisRecentes));
         Historico recente = new Historico("Today",calculaMedia(maisRecentes));
         historicos.add(recente);
+        Historico presente = new Historico(nomeMesAtual,calculaMedia(mesPresente));
+        historicos.add(presente);
+        //Historico passado = new Historico("Mês passado",calculaMedia(mesPassado));
+        Historico passado = new Historico("Last month",calculaMedia(mesPassado));
+        historicos.add(passado);
+        //Historico antigos = new Historico("Mais antigo",calculaMedia(maisAntigo));
+        Historico antigos = new Historico("Older",calculaMedia(maisAntigo));
+        historicos.add(antigos);
         folhas2Adapter = new Folhas2Adapter(historicos);
         //folhasAdapter = new FolhasAdapter(dados);
         //listDados.setAdapter(folhasAdapter);
@@ -171,18 +173,17 @@ public class ActDados extends AppCompatActivity{
             }
         }
         ArrayList<Historico> historicos = new ArrayList<>();
-        //Historico antigos = new Historico("Mais antigo",calculaMedia(maisAntigo));
-        Historico antigos = new Historico("Older",calculaMedia(maisAntigo));
-        historicos.add(antigos);
-        //Historico passado = new Historico("Mês passado",calculaMedia(mesPassado));
-        Historico passado = new Historico("Last month",calculaMedia(mesPassado));
-        historicos.add(passado);
-        Historico presente = new Historico(nomeMesAtual,calculaMedia(mesPresente));
-        historicos.add(presente);
         //Historico recente = new Historico("Hoje",calculaMedia(maisRecentes));
         Historico recente = new Historico("Today",calculaMedia(maisRecentes));
         historicos.add(recente);
-
+        Historico presente = new Historico(nomeMesAtual,calculaMedia(mesPresente));
+        historicos.add(presente);
+        //Historico passado = new Historico("Mês passado",calculaMedia(mesPassado));
+        Historico passado = new Historico("Last month",calculaMedia(mesPassado));
+        historicos.add(passado);
+        //Historico antigos = new Historico("Mais antigo",calculaMedia(maisAntigo));
+        Historico antigos = new Historico("Older",calculaMedia(maisAntigo));
+        historicos.add(antigos);
         folhas2Adapter = new Folhas2Adapter(historicos);
         //folhasAdapter = new FolhasAdapter(dados);
         //listDados.setAdapter(folhasAdapter);
@@ -240,6 +241,11 @@ public class ActDados extends AppCompatActivity{
                 }
             });
             dialog.show();
+        }else if(id == R.id.action_home){
+            Intent it3 = new Intent(this, ActMain.class);
+            it3.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            it3.putExtra("EXIT", true);
+            startActivity(it3);
         }
 
         return super.onOptionsItemSelected(item);
@@ -247,7 +253,7 @@ public class ActDados extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
-        Intent it2 = new Intent(this, ActMain.class);
+        Intent it2 = new Intent(this, ActCamera.class);
         startActivity(it2);
     }
 }
