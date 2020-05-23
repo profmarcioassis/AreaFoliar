@@ -243,7 +243,7 @@ public class ActDados extends AppCompatActivity{
             dialog.show();
         }else if(id == R.id.action_home){
             Intent it3 = new Intent(this, ActMain.class);
-            it3.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            it3.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             it3.putExtra("EXIT", true);
             startActivity(it3);
         }

@@ -3,6 +3,7 @@ package com.example.jonas.areafoliar;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,29 +16,33 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.jonas.areafoliar.helper.BitmapHelper;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class ActCamera extends AppCompatActivity implements View.OnClickListener{
+public class ActCamera extends AppCompatActivity implements View.OnClickListener {
 
     ImageView imageViewFoto;
-    public static Bitmap bitmap;
+    private Bitmap foto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_camera);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        imageViewFoto = findViewById(R.id.imageViewFoto);
-        //Bundle extras = this.getIntent().getExtras();
-
-        //byte[] byteArray = extras.getByteArray("foto");
-        //Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        Bitmap foto = null;
+        setContentView(R.layout.act_camera);
+        imageViewFoto = findViewById(R.id.imageViewFoto);
+        foto = BitmapHelper.getInstance().getBitmap();
+        Bitmap rotated = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
+        imageViewFoto.setImageBitmap(rotated);
+
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        /*
         if(ActCameraCv.bitmap != null){
             foto = ActCameraCv.bitmap;
         }else if(ActMain.bitmap != null){
@@ -45,9 +50,7 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
         }/*else{
             foto = ActDados.bitmap;
         }*/
-        bitmap = foto;
-        Bitmap rotated = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
-        imageViewFoto.setImageBitmap(rotated);
+
 
     }
 
@@ -60,6 +63,7 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
     @Override
     public void onBackPressed() {
         Intent it2 = new Intent(this, ActDados.class);
+        it2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(it2);
     }
 
@@ -77,7 +81,7 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
                     /* boolean compressed = ActCameraCv.bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream); */
 
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    ActCameraCv.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    foto.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     stream.close();
                 } catch (FileNotFoundException e) {
                     // TODO Auto-generated catch block
@@ -99,13 +103,13 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.act_camera,menu);
+        inflater.inflate(R.menu.act_camera, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.dados:
                 Intent it1 = new Intent(this, ActDados.class);
                 startActivity(it1);

@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 public class Folha implements Serializable, Parcelable {
     private String nome, area, altura, largura, data, perimetro;
-    private int codigo, tipo;
+    private int codigo, tipo, mImageResource;
 
     public Folha(String nome, String area, String altura, String largura, String data, int tipo, String perimetro) {
         this.nome = nome;
@@ -107,6 +107,14 @@ public class Folha implements Serializable, Parcelable {
 
     public void setPerimetro(String perimetro) {
         this.perimetro = perimetro;
+    }
+
+    public int getmImageResource() {
+        return mImageResource;
+    }
+
+    public void setmImageResource(int mImageResource) {
+        this.mImageResource = mImageResource;
     }
 
     @Override

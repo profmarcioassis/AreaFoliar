@@ -12,7 +12,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.jonas.areafoliar.database.DadosOpenHelper;
+import com.example.jonas.areafoliar.helper.BitmapHelper;
 import com.example.jonas.areafoliar.repositorio.FolhasRepositorio;
 
 import org.opencv.android.OpenCVLoader;
@@ -44,6 +47,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,16 +58,16 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
 
     private static final int TELA_CAMERA = 1;
     //private double altQuad, largQuad;
-    private static Mat ImageMat;
-    public static Bitmap bitmap;
+    private Mat ImageMat;
+    public Bitmap bitmap;
     //int total = 0;
     //double altura = 0, largura = 0, areaQuadradoPx = 0, areaFolhaCm = 0;
     private FolhasRepositorio folhaRepositorio;
     //private int cont = 1;
     private String data_completa;
-    private static List<MatOfPoint2f> square = new ArrayList<>();
-    private static List<MatOfPoint> leaves = new ArrayList<>();
-    private static List<MatOfPoint> leavesPCA = new ArrayList<>();
+    private List<MatOfPoint2f> square = new ArrayList<>();
+    private List<MatOfPoint> leaves = new ArrayList<>();
+    private List<MatOfPoint> leavesPCA = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,13 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
+        }
+        //fix crash
+        if(Build.VERSION.SDK_INT > 9){
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll()
+                    .build();
+            StrictMode.setThreadPolicy(policy);
         }
         (findViewById(R.id.camera_act_main)).setOnClickListener(this);
         (findViewById(R.id.galeria_act_main)).setOnClickListener(this);
@@ -174,14 +185,13 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 c.moveToFirst();
                 int columIndex = c.getColumnIndex(colunaArquivo[0]);
                 String picPath = c.getString(columIndex);
-                bitmap = null;
                 bitmap = BitmapFactory.decodeFile(picPath);
 
                 ImageMat = new Mat();
                 //Cria um bitmap com a configuração ARGB_8888
-                Bitmap bmp = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                //Bitmap bmp = bitmap.copy(Bitmap.Config.ARGB_8888, true);
                 //Transforma o Bitmap em Mat
-                Utils.bitmapToMat(bmp, ImageMat);
+                Utils.bitmapToMat(bitmap, ImageMat);
                 //Cria uma matriz com o tamanho e o tipo do Mat posterior
                 Mat result = new Mat(ImageMat.size(), ImageMat.type());
                 //Converte a imagem em tons de cinza
@@ -202,16 +212,23 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 //Converte o bitmap para JPEG
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                stream.reset();
                 if (square.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "The square could not be found. Try again", Toast.LENGTH_LONG).show();
                 } else if (leaves.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "The leaves could not be found. Try again", Toast.LENGTH_LONG).show();
                 } else {
+                    BitmapHelper.getInstance().setBitmap(bitmap);
                     //Abre a tela para mostrar o resultado
                     Intent it = new Intent(this, ActCamera.class);
+                    it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                     //Inicia a intent
                     startActivity(it);
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     finish();
                 }
             }
@@ -267,6 +284,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     protected void onResume() {
 
         if (getIntent().getBooleanExtra("EXIT", false)) {
+
             //Toast.makeText(getApplicationContext(), "Fechar tudo", Toast.LENGTH_LONG).show();
             //finish();
         }
@@ -312,7 +330,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         center.y = meanData[1];
         // Store eigenvectors
         double[] eigenvectorsData = new double[(int) (eigenvectors.total() * eigenvectors.channels())];
-        eigenvectors.get(0, 0, eigenvectorsData);
+        eigenvectors.get(1, 0, eigenvectorsData);
         return Math.atan2(-eigenvectorsData[1], -eigenvectorsData[0]); // orientation in radians;
     }
 
@@ -331,7 +349,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         return contourPCA;
     }
 
-    static void findObjects(Mat image) {
+    void findObjects(Mat image) {
         // Mat gray = new Mat();
         Mat thresh = new Mat();
         Mat hierarchy = new Mat();
