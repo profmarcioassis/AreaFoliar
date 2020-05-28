@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.jonas.areafoliar.helper.BitmapHelper;
 
@@ -26,6 +27,7 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
 
     ImageView imageViewFoto;
     private Bitmap foto;
+    private int codigo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,9 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
         matrix.postRotate(90);
         setContentView(R.layout.act_camera);
         imageViewFoto = findViewById(R.id.imageViewFoto);
+        Bundle bundle = getIntent().getExtras();
+        assert bundle != null;
+        codigo = bundle.getInt("CODIGO");
         foto = BitmapHelper.getInstance().getBitmap();
         Bitmap rotated = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
         imageViewFoto.setImageBitmap(rotated);
@@ -92,8 +97,11 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
                 break;
 
             case R.id.dados_camera:
-                Intent it1 = new Intent(this, ActDados.class);
-                startActivity(it1);
+                Intent it = new Intent(this, ActConfigDados.class);
+                it.putExtra("CODIGO", codigo);
+                startActivityForResult(it,0);
+                //Intent it1 = new Intent(this, ActDados.class);
+                //startActivity(it1);
                 break;
 
         }

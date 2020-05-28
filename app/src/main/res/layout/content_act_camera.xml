@@ -57,7 +57,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="32dp"
         android:onClick="onClick"
-        android:src="@drawable/ic_dados_salvos_act_main"
+        android:src="@drawable/ic_list_black_cameradp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

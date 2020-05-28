@@ -251,9 +251,9 @@ public class ActDados extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         Intent it2 = new Intent(this, ActCamera.class);
         startActivity(it2);
-    }
+    }*/
 }

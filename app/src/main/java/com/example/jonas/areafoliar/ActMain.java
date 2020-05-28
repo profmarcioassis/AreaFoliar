@@ -222,6 +222,9 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                     Intent it = new Intent(this, ActCamera.class);
                     it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+                    List<Folha> dados = folhaRepositorio.consultar();
+                    int codigo = dados.get(dados.size() - 1).getCodigo();
+                    it.putExtra("CODIGO",codigo);
                     //Inicia a intent
                     startActivity(it);
                     try {

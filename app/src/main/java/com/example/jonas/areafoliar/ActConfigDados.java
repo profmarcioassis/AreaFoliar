@@ -54,15 +54,17 @@ public class ActConfigDados extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         Intent it2 = new Intent(this, ActDados.class);
         startActivity(it2);
-    }
+    }*/
 
     private void confirmar() {
         try{
             folhasRepositorio.alterar(folha.getCodigo(),edtNomeTeste.getText().toString());
+            Intent itDados = new Intent(this, ActDados.class);
+            startActivityForResult(itDados, 0);
             finish();
         }catch (SQLException ex){
             AlertDialog.Builder dlg = new AlertDialog.Builder(this);

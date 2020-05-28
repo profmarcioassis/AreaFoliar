@@ -145,6 +145,9 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
                 } else {
                     //Abre a tela para mostrar o resultado
                     Intent it = new Intent(this, ActCamera.class);
+                    List<Folha> dados = folhaRepositorio.consultar();
+                    int codigo = dados.get(dados.size() - 1).getCodigo();
+                    it.putExtra("CODIGO",codigo);
                     //Inicia a intent
                     startActivity(it);
                 }
@@ -413,9 +416,6 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
         folhaMedia.setPerimetro(mP + "");
         folhaMedia.setTipo(1);
         folhaRepositorio.inserir(folhaMedia);
-        leaves.clear();
-        square.clear();
-        leavesPCA.clear();
     }
 
     @Override
