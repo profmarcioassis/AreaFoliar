@@ -3,9 +3,11 @@ apply plugin: 'com.android.library'
 buildscript{
     repositories{
         mavenCentral()
+        google()
+        jcenter()
     }
     dependencies{
-        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.android.tools.build:gradle:3.6.4'
     }
 }
 

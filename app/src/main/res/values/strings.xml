@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Area Foliar</string>
+    <string name="app_name">Leaf Area</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -31,7 +31,8 @@
     <string name="desc_img_cameraOpenCv">cameraOpenCv</string>
     <string name="desc_btn_galeriaOpenCv">btnGaleriaOpenCv</string>
     <string name="desc_btn_cameraOpenCv">btnCameraOpenCv</string>
-    <string name="nav_title">Dimensionamento Foliar</string>
+    <!--<string name="nav_title">Dimensionamento Foliar</string>-->
+    <string name="nav_title">Leaf Area</string>
     <!--<string name="historicoDados">Histórico</string>-->
     <string name="historicoDados">Historic</string>
     <string name="desc_img_arrowDados">arrowDados</string>
@@ -83,6 +84,15 @@
     <string name="perimeter_linha_config_dados">Perimeter:</string>
     <string name="perimeter_value_linha_config_dados">Perimeter value</string>
     <string name="txtPerimetroDados">Average Perimeter:</string>
+    <string name="title_activity_splash_screen_inicial">Leaf Area</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
 
 </resources>

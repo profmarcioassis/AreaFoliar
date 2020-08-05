@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.example.jonas.areafoliar.database.DadosOpenHelper;
 import com.example.jonas.areafoliar.helper.BitmapHelper;
 import com.example.jonas.areafoliar.repositorio.FolhasRepositorio;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -69,6 +70,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     private List<MatOfPoint> leaves = new ArrayList<>();
     private List<MatOfPoint> leavesPCA = new ArrayList<>();
 
+    private static CustomProgressBar progressBar = new CustomProgressBar();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,13 +100,12 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         (findViewById(R.id.informacao_act_main)).setOnClickListener(this);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        //drawer.addDrawerListener(toggle);
+        //toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        //NavigationView navigationView = findViewById(R.id.nav_view);
+        //navigationView.setNavigationItemSelectedListener(this);
         criarConexao();
     }
 
@@ -121,7 +122,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.act_main, menu);
+        //getMenuInflater().inflate(R.menu.act_main, menu);
         return true;
     }
 
@@ -134,9 +135,9 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -144,7 +145,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        /*int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
             Intent it = new Intent(this, ActCameraCv.class);
@@ -158,7 +159,7 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawer(GravityCompat.START);*/
         return true;
     }
 
@@ -212,10 +213,8 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 //Converte o bitmap para JPEG
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                if (square.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "The square could not be found. Try again", Toast.LENGTH_LONG).show();
-                } else if (leaves.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "The leaves could not be found. Try again", Toast.LENGTH_LONG).show();
+                if (square.size() <= 0 || square.size() > 1 || leaves.size() <= 0) {
+                    //Toast.makeText(getApplicationContext(), "An error occurred while analyzing the image. Please try again.", Toast.LENGTH_LONG).show();
                 } else {
                     BitmapHelper.getInstance().setBitmap(bitmap);
                     //Abre a tela para mostrar o resultado
@@ -225,6 +224,8 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                     List<Folha> dados = folhaRepositorio.consultar();
                     int codigo = dados.get(dados.size() - 1).getCodigo();
                     it.putExtra("CODIGO",codigo);
+                    // Show progress bar
+                    //progressBar.show(this,"Loading...");
                     //Inicia a intent
                     startActivity(it);
                     try {
@@ -404,156 +405,162 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
     }
 
     void surfaceCalc() {
-        List<MatOfPoint> result = new ArrayList<>();
-        SharedPreferences sharedPreferences = getSharedPreferences("valorLadoPref", Context.MODE_PRIVATE);
-        float areaQuadrado = sharedPreferences.getInt("lado", 5) * sharedPreferences.getInt("lado", 5);
+        if(square.size() <= 0 || square.size() > 1){
+            Toast.makeText(getApplicationContext(), "The square could not be found. Please try again.", Toast.LENGTH_LONG).show();
+        }else if(leaves.size() <= 0){
+            Toast.makeText(getApplicationContext(), "No leaf can be found. Please try again.", Toast.LENGTH_LONG).show();
+        }else{
+            List<MatOfPoint> result = new ArrayList<>();
+            SharedPreferences sharedPreferences = getSharedPreferences("valorLadoPref", Context.MODE_PRIVATE);
+            float areaQuadrado = sharedPreferences.getInt("lado", 5) * sharedPreferences.getInt("lado", 5);
 
-        //---------------------Variaveis auxiliares calculos-----------------------
+            //---------------------Variaveis auxiliares calculos-----------------------
 
-        double largSquare, compSquare;
-        //double sum = 0.0;
-        double mL = 0.0, mC = 0.0, mA = 0.0, mP = 0.0;
-        double dL = 0.0, dC = 0.0, dA = 0.0, dP = 0.0;
-        double[] L = new double[leaves.size()];
-        double[] C = new double[leaves.size()];
-        double[] A = new double[leaves.size()];
-        double[] P = new double[leaves.size()];
-        //double[] LC = new double[leaves.size()];
+            double largSquare, compSquare;
+            //double sum = 0.0;
+            double mL = 0.0, mC = 0.0, mA = 0.0, mP = 0.0;
+            double dL = 0.0, dC = 0.0, dA = 0.0, dP = 0.0;
+            double[] L = new double[leaves.size()];
+            double[] C = new double[leaves.size()];
+            double[] A = new double[leaves.size()];
+            double[] P = new double[leaves.size()];
+            //double[] LC = new double[leaves.size()];
 
-        //-------------------SQUARE----------------------
+            //-------------------SQUARE----------------------
 
-        largSquare = Math.sqrt((Math.pow((square.get(0).toArray()[2].x - square.get(0).toArray()[1].x), 2) + Math.pow((square.get(0).toArray()[2].y - square.get(0).toArray()[1].y), 2)));
-        compSquare = Math.sqrt((Math.pow((square.get(0).toArray()[1].x - square.get(0).toArray()[0].x), 2) + Math.pow((square.get(0).toArray()[1].y - square.get(0).toArray()[0].y), 2)));
+            largSquare = Math.sqrt((Math.pow((square.get(0).toArray()[2].x - square.get(0).toArray()[1].x), 2) + Math.pow((square.get(0).toArray()[2].y - square.get(0).toArray()[1].y), 2)));
+            compSquare = Math.sqrt((Math.pow((square.get(0).toArray()[1].x - square.get(0).toArray()[0].x), 2) + Math.pow((square.get(0).toArray()[1].y - square.get(0).toArray()[0].y), 2)));
 
-        double contourSquare = Imgproc.contourArea(square.get(0));
-        double perSquare = Math.sqrt(areaQuadrado) * 4;
+            double contourSquare = Imgproc.contourArea(square.get(0));
+            double perSquare = Math.sqrt(areaQuadrado) * 4;
 
-        //final Point p = square.get(0).toArray()[0];
-        //int n = square.get(0).toArray().length;
-        Scalar color = new Scalar(0, 255, 0);
-        Imgproc.polylines(ImageMat, result, true, color, 1, 10, Imgproc.LINE_AA);
+            //final Point p = square.get(0).toArray()[0];
+            //int n = square.get(0).toArray().length;
+            Scalar color = new Scalar(0, 255, 0);
+            Imgproc.polylines(ImageMat, result, true, color, 1, 10, Imgproc.LINE_AA);
 
-        //---------------------LEAFS-----------------------
+            //---------------------LEAFS-----------------------
 
-        Rect[] boundRect = new Rect[leavesPCA.size()];
+            Rect[] boundRect = new Rect[leavesPCA.size()];
 
-        for (int i = 0; i < leavesPCA.size(); i++) {
-            Folha folha = new Folha();
-            folha.setData(data_completa);
-            folha.setTipo(0);
-            //final Point p = leaves.get(i).toArray()[0];
-            //int n = leaves.get(i).toArray().length;
-            Scalar color2 = new Scalar(0, 0, 255);
-            Imgproc.polylines(ImageMat, result, true, color2, 1, 10, Imgproc.LINE_AA);
-            Scalar color3 = new Scalar(255, 0, 0);
-            //leaves[i].at(leaves[i].capacity()/2);
-            //double x = boundRect[i].x + 0.5 * boundRect[i].width;
-            double x = leaves.get(i).toArray()[0].x + 0.5 * leaves.get(i).width();
-            //double y = boundRect[i].y + 0.5 * boundRect[i].height;
-            double y = leaves.get(i).toArray()[0].y + 0.5 * leaves.get(i).height();
-            Imgproc.putText(ImageMat, (i + 1) + "", new Point(x, y), Core.FONT_HERSHEY_SIMPLEX, 5, color3,
-                    12
-            );
-            //result.append("\nLeaf: ");
-            //result.append(QString::number (i + 1));
-            folha.setNome(data_completa + " " + (i + 1));
-            //result.append("\n\n");*/
+            for (int i = 0; i < leavesPCA.size(); i++) {
+                Folha folha = new Folha();
+                folha.setData(data_completa);
+                folha.setTipo(0);
+                //final Point p = leaves.get(i).toArray()[0];
+                //int n = leaves.get(i).toArray().length;
+                Scalar color2 = new Scalar(0, 0, 255);
+                Imgproc.polylines(ImageMat, result, true, color2, 1, 10, Imgproc.LINE_AA);
+                Scalar color3 = new Scalar(255, 0, 0);
+                //leaves[i].at(leaves[i].capacity()/2);
+                //double x = boundRect[i].x + 0.5 * boundRect[i].width;
+                double x = leaves.get(i).toArray()[0].x + 0.5 * leaves.get(i).width();
+                //double y = boundRect[i].y + 0.5 * boundRect[i].height;
+                double y = leaves.get(i).toArray()[0].y + 0.5 * leaves.get(i).height();
+                Imgproc.putText(ImageMat, (i + 1) + "", new Point(x, y), Core.FONT_HERSHEY_SIMPLEX, 5, color3,
+                        12
+                );
+                //result.append("\nLeaf: ");
+                //result.append(QString::number (i + 1));
+                folha.setNome(data_completa + " " + (i + 1));
+                //result.append("\n\n");*/
 
-            //_____________Calculo Largura e Comprimento_____________
-            boundRect[i] = Imgproc.boundingRect(leavesPCA.get(i));
+                //_____________Calculo Largura e Comprimento_____________
+                boundRect[i] = Imgproc.boundingRect(leavesPCA.get(i));
 
-            double aux = Math.sqrt((Math.pow((boundRect[i].tl().x - boundRect[i].tl().x), 2) + Math.pow((boundRect[i].br().y - boundRect[i].tl().y), 2)));
-            aux = (aux * Math.sqrt((areaQuadrado))) / largSquare;
+                double aux = Math.sqrt((Math.pow((boundRect[i].tl().x - boundRect[i].tl().x), 2) + Math.pow((boundRect[i].br().y - boundRect[i].tl().y), 2)));
+                aux = (aux * Math.sqrt((areaQuadrado))) / largSquare;
 
-            double aux2 = Math.sqrt((Math.pow((boundRect[i].tl().x - boundRect[i].br().x), 2) + Math.pow((boundRect[i].tl().y - boundRect[i].tl().y), 2)));
-            aux2 = (aux2 * Math.sqrt((areaQuadrado))) / compSquare;
+                double aux2 = Math.sqrt((Math.pow((boundRect[i].tl().x - boundRect[i].br().x), 2) + Math.pow((boundRect[i].tl().y - boundRect[i].tl().y), 2)));
+                aux2 = (aux2 * Math.sqrt((areaQuadrado))) / compSquare;
 
-            if (aux2 > aux) {
-                mL += aux;
-                mC += aux2;
-                //result.append("\nWidth: "); result.append(QString::number(aux));
-                folha.setLargura(aux + "");
-                L[i] = aux;
-                //result.append("\nLength: "); result.append(QString::number(aux2));
-                folha.setAltura(aux2 + "");
-                C[i] = aux2;
-                //result.append("\nWidth/Length: "); result.append(QString::number(aux/aux2));
-                //LC[i] = aux / aux2;
-            } else {
-                mL += aux2;
-                mC += aux;
-                //result.append("\nWidth: "); result.append(QString::number(aux2));
-                folha.setLargura(aux2 + "");
-                L[i] = aux2;
-                //result.append("\nLength: "); result.append(QString::number(aux));
-                C[i] = aux;
-                folha.setAltura(aux + "");
-                //result.append("\nWidth/Length: "); result.append(QString::number(aux2/aux));
-                //LC[i] = aux2 / aux;
+                if (aux2 > aux) {
+                    mL += aux;
+                    mC += aux2;
+                    //result.append("\nWidth: "); result.append(QString::number(aux));
+                    folha.setLargura(aux + "");
+                    L[i] = aux;
+                    //result.append("\nLength: "); result.append(QString::number(aux2));
+                    folha.setAltura(aux2 + "");
+                    C[i] = aux2;
+                    //result.append("\nWidth/Length: "); result.append(QString::number(aux/aux2));
+                    //LC[i] = aux / aux2;
+                } else {
+                    mL += aux2;
+                    mC += aux;
+                    //result.append("\nWidth: "); result.append(QString::number(aux2));
+                    folha.setLargura(aux2 + "");
+                    L[i] = aux2;
+                    //result.append("\nLength: "); result.append(QString::number(aux));
+                    C[i] = aux;
+                    folha.setAltura(aux + "");
+                    //result.append("\nWidth/Length: "); result.append(QString::number(aux2/aux));
+                    //LC[i] = aux2 / aux;
+                }
+                //_____________Calculo Area_____________
+                double auxArea = ((Imgproc.contourArea(leavesPCA.get(i)) * areaQuadrado) / contourSquare);
+                folha.setArea(auxArea + "");
+                //sum += auxArea;
+                //result.append("\nArea: "); result.append(QString::number(auxArea));
+                mA += auxArea;
+                A[i] = auxArea;
+                //_____________Calculo Perimetro_____________
+                double auxPer = ((Imgproc.arcLength(new MatOfPoint2f(leavesPCA.get(i).toArray()), true) * perSquare) / Imgproc.arcLength(new MatOfPoint2f(square.get(0)), true));
+                //result.append("\nPerimeter: "); result.append(QString::number(auxPer));
+                folha.setPerimetro(auxPer + "");
+                mP += auxPer;
+                P[i] = auxPer;
+                //result.append("\n\n");
+                //_____________Result sum areas_____________
+                //result.append("\nSum areas: "); result.append(QString::number(sum));
+                //result.append("\n\n");
+
+                //_____________Calculo Media e Desvio_____________
+
+                //_____________Media_____________
+                mL = mL / leavesPCA.size();
+                //result.append("\nAverage width: "); result.append(QString::number(mL));
+                mC = mC / leavesPCA.size();
+                //result.append("\nAverage lenght: "); result.append(QString::number(mC));
+                mA = mA / leavesPCA.size();
+                //result.append("\nAverage area: "); result.append(QString::number(mA));
+                mP = mP / leavesPCA.size();
+                //result.append("\nAverage perimeter: "); result.append(QString::number(mP));
+                //result.append("\n\n");
+                //_____________Desvio_____________
+                for (int j = 0; j < leavesPCA.size(); j++) {
+                    dL += Math.pow(L[i] - mL, 2);
+                }
+                dL = Math.sqrt(dL / leavesPCA.size());
+                //result.append("\nWidth deviation: "); result.append(QString::number(dL));
+                for (int k = 0; k < leavesPCA.size(); k++) {
+                    dC += Math.pow(C[i] - mC, 2);
+                }
+                dC = Math.sqrt(dC / leavesPCA.size());
+                //result.append("\nLenght deviation: "); result.append(QString::number(dC));
+                for (int l = 0; l < leavesPCA.size(); l++) {
+                    dA += Math.pow(A[i] - mA, 2);
+                }
+                dA = Math.sqrt(dA / leavesPCA.size());
+                //result.append("\nArea deviation: "); result.append(QString::number(dA));
+                for (int k = 0; k < leavesPCA.size(); k++) {
+                    dP += Math.pow(P[i] - mP, 2);
+                }
+                dP = Math.sqrt(dP / leavesPCA.size());
+                //result.append("\nPerimeter deviation: "); result.append(QString::number(dP));
+                //result.append("\n\n");
+                folhaRepositorio.inserir(folha);
             }
-            //_____________Calculo Area_____________
-            double auxArea = ((Imgproc.contourArea(leavesPCA.get(i)) * areaQuadrado) / contourSquare);
-            folha.setArea(auxArea + "");
-            //sum += auxArea;
-            //result.append("\nArea: "); result.append(QString::number(auxArea));
-            mA += auxArea;
-            A[i] = auxArea;
-            //_____________Calculo Perimetro_____________
-            double auxPer = ((Imgproc.arcLength(new MatOfPoint2f(leavesPCA.get(i).toArray()), true) * perSquare) / Imgproc.arcLength(new MatOfPoint2f(square.get(0)), true));
-            //result.append("\nPerimeter: "); result.append(QString::number(auxPer));
-            folha.setPerimetro(auxPer + "");
-            mP += auxPer;
-            P[i] = auxPer;
-            //result.append("\n\n");
-            //_____________Result sum areas_____________
-            //result.append("\nSum areas: "); result.append(QString::number(sum));
-            //result.append("\n\n");
-
-            //_____________Calculo Media e Desvio_____________
-
-            //_____________Media_____________
-            mL = mL / leavesPCA.size();
-            //result.append("\nAverage width: "); result.append(QString::number(mL));
-            mC = mC / leavesPCA.size();
-            //result.append("\nAverage lenght: "); result.append(QString::number(mC));
-            mA = mA / leavesPCA.size();
-            //result.append("\nAverage area: "); result.append(QString::number(mA));
-            mP = mP / leavesPCA.size();
-            //result.append("\nAverage perimeter: "); result.append(QString::number(mP));
-            //result.append("\n\n");
-            //_____________Desvio_____________
-            for (int j = 0; j < leavesPCA.size(); j++) {
-                dL += Math.pow(L[i] - mL, 2);
-            }
-            dL = Math.sqrt(dL / leavesPCA.size());
-            //result.append("\nWidth deviation: "); result.append(QString::number(dL));
-            for (int k = 0; k < leavesPCA.size(); k++) {
-                dC += Math.pow(C[i] - mC, 2);
-            }
-            dC = Math.sqrt(dC / leavesPCA.size());
-            //result.append("\nLenght deviation: "); result.append(QString::number(dC));
-            for (int l = 0; l < leavesPCA.size(); l++) {
-                dA += Math.pow(A[i] - mA, 2);
-            }
-            dA = Math.sqrt(dA / leavesPCA.size());
-            //result.append("\nArea deviation: "); result.append(QString::number(dA));
-            for (int k = 0; k < leavesPCA.size(); k++) {
-                dP += Math.pow(P[i] - mP, 2);
-            }
-            dP = Math.sqrt(dP / leavesPCA.size());
-            //result.append("\nPerimeter deviation: "); result.append(QString::number(dP));
-            //result.append("\n\n");
-            folhaRepositorio.inserir(folha);
+            Folha folhaMedia = new Folha();
+            folhaMedia.setNome(data_completa + " - Nome do teste");
+            folhaMedia.setArea(mA + "");
+            folhaMedia.setAltura(mC + "");
+            folhaMedia.setLargura(mL + "");
+            folhaMedia.setData(data_completa);
+            folhaMedia.setPerimetro(mP + "");
+            folhaMedia.setTipo(1);
+            folhaRepositorio.inserir(folhaMedia);
         }
-        Folha folhaMedia = new Folha();
-        folhaMedia.setNome(data_completa + " - Nome do teste");
-        folhaMedia.setArea(mA + "");
-        folhaMedia.setAltura(mC + "");
-        folhaMedia.setLargura(mL + "");
-        folhaMedia.setData(data_completa);
-        folhaMedia.setPerimetro(mP + "");
-        folhaMedia.setTipo(1);
-        folhaRepositorio.inserir(folhaMedia);
     }
 }
 

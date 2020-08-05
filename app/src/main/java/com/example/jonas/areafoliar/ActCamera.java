@@ -28,6 +28,7 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
     ImageView imageViewFoto;
     private Bitmap foto;
     private int codigo;
+    private int voltar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
         foto = BitmapHelper.getInstance().getBitmap();
         Bitmap rotated = Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
         imageViewFoto.setImageBitmap(rotated);
-
+        voltar = 0;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,9 +68,15 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
 
     @Override
     public void onBackPressed() {
-        Intent it2 = new Intent(this, ActDados.class);
-        it2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(it2);
+        if(voltar == 0){
+            Toast.makeText(getApplicationContext(), "Click again to return to the home screen. You will not be able to return to this screen later.", Toast.LENGTH_LONG).show();
+            voltar = 1;
+        }else{
+            Intent it2 = new Intent(this, ActMain.class);
+            it2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(it2);
+        }
+
     }
 
     @Override
@@ -105,7 +112,6 @@ public class ActCamera extends AppCompatActivity implements View.OnClickListener
                 break;
 
         }
-
     }
 
     @Override
