@@ -118,11 +118,8 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.camera:
-                Toast.makeText(getApplicationContext(), "Click.", Toast.LENGTH_LONG).show();
                 Mat result = new Mat(ImageMat.size(), ImageMat.type());
                 Imgproc.cvtColor(ImageMat, result, Imgproc.COLOR_RGB2GRAY);
-                //Cria as bounding boxes
-                //result = createBoundingBoxes(result);
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
                 Date dataCalc = new Date();
                 Calendar cal = Calendar.getInstance();
@@ -133,23 +130,22 @@ public class ActCameraCv extends AppCompatActivity implements CvCameraViewListen
                 surfaceCalc();
                 //Realiza a cnoversão de Mat para Bitmap
                 bitmap = Bitmap.createBitmap(result.cols(), result.rows(), Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(result, bitmap);
+                Utils.matToBitmap(ImageMat, bitmap);
                 //ContentValues contentValues = new ContentValues();
                 //Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
                 //Salva a imagem
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 if (square.size() <= 0 || square.size() > 1 || leaves.size() <= 0) {
-                    Toast.makeText(getApplicationContext(), "An error occurred while analyzing the image. Please try again.", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "An error occurred while analyzing the image. Please try again.", Toast.LENGTH_LONG).show();
                 } else {
-
                     BitmapHelper.getInstance().setBitmap(bitmap);
                     //Abre a tela para mostrar o resultado
                     Intent it = new Intent(this, ActCamera.class);
                     it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     List<Folha> dados = folhaRepositorio.consultar();
                     int codigo = dados.get(dados.size() - 1).getCodigo();
-                    it.putExtra("CODIGO", codigo);
+                    it.putExtra("CODIGO",codigo);
                     //Inicia a intent
                     startActivity(it);
                     // Show progress bar

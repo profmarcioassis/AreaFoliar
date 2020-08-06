@@ -207,15 +207,16 @@ public class ActMain extends AppCompatActivity implements NavigationView.OnNavig
                 data_completa = dateFormat.format(data_atual);
                 findObjects(result);
                 surfaceCalc();
-                //Converte o Mat em bitmap para salvar na tela
-                Utils.matToBitmap(ImageMat, bitmap);
-                //Cria objeto de ByteArray
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                //Converte o bitmap para JPEG
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 if (square.size() <= 0 || square.size() > 1 || leaves.size() <= 0) {
                     //Toast.makeText(getApplicationContext(), "An error occurred while analyzing the image. Please try again.", Toast.LENGTH_LONG).show();
                 } else {
+                    //Converte o Mat em bitmap para salvar na tela
+                    Utils.matToBitmap(ImageMat, bitmap);
+                    //Cria objeto de ByteArray
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    //Converte o bitmap para JPEG
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    //Salva o bitmap enquanto o app é utilzado
                     BitmapHelper.getInstance().setBitmap(bitmap);
                     //Abre a tela para mostrar o resultado
                     Intent it = new Intent(this, ActCamera.class);
